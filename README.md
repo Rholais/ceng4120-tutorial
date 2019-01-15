@@ -1,0 +1,2 @@
+# ceng4120-tutorial
+This course aims at providing students basic knowledge and background on VLSI CAD. The course will cover various topics on automation across the design of a VLSI circuit including but not limited to, Boolean matching, logic optimization, chip planning, placement, routing, interconnect optimization, testing and manufacturing. Students will learn to use some EDA tools and also develop some algorithms to solve EDA problems.
