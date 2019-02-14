@@ -1,0 +1,194 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 02}
+\subtitle{Boolean Functions}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\subsection{Shannon Expansion}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Shannon Expansion}
+\begin{theorem}
+	\label{thm:shannon}
+    If $f: \mathbb{B}^n \rightarrow \mathbb{B}$ is a Boolean function, then
+    \begin{equation}
+    	\forall (x_1, \ldots) \in \mathbb{B}^n,
+    	f(x_1, \ldots) = x_1' f(0, \ldots) + x_1 f(1, \ldots).
+    \end{equation} 
+\end{theorem}
+\newpage
+
+\textbf{Proof.} \begin{enumerate}
+	\item Suppose $f$ is a \textit{constant function}, defined by $f(X) = b$ for all $X \in \mathbb{B}^n$,
+	where $b$ is a fixed element of $\mathbb{B}$. Then \begin{equation}
+		f(x_1, \ldots) = b = (x_1' + x_1) b = x_1'b + x_1b = x_1' f(0, \ldots) + x_1 f(1, \ldots).
+	\end{equation}
+	\item Suppose $f$ is a \textit{projection function}, defined by $f(X) = x_1$ for all $X \in \mathbb{B}^n$. Then \begin{equation}
+	f(x_1, \ldots) = x_1 = 0 + x_1 \cdot 1 = x_1' \cdot 0 + x_1 \cdot 1 = x_1' f(0, \ldots) + x_1 f(1, \ldots).
+	\end{equation}
+	\item Suppose $f$ is a \textit{projection function}, defined by $f(X) = x_i$ for all $X \in \mathbb{B}^n$, where $i \in \{2, \ldots, n\}$. Then \begin{equation}
+	f(x_1, \ldots) = x_i = (x_1' + x_1) x_i = x_1' x_i + x_1 x_i = x_1' f(0, \ldots) + x_1 f(1, \ldots).
+	\end{equation}
+	\newpage
+	
+	\item Suppose~\Cref{thm:shannon} to hold for Boolean functions $g$ and $h$, i.e., \begin{align}
+		\begin{aligned}
+		g(x_1, \ldots) & = x_1' g(0, \ldots) + x_1 g(1, \ldots),\\
+		h(x_1, \ldots) & = x_1' h(0, \ldots) + x_1 h(1, \ldots).
+		\end{aligned}
+	\end{align}
+	We show that~\Cref{thm:shannon} then holds
+	for the $n$-variable functions $g + h$, $gh$, and $g'$.
+	\begin{enumerate}
+		\item \begin{align}
+			\begin{aligned}
+			(g + h)(x_1, \ldots) = & g(x_1, \ldots) + h(x_1, \ldots)\\
+			= & (x_1' g(0, \ldots) + x_1g(1, \ldots)) + (x_1'h(0, \ldots) + x_1h(1, \ldots))\\
+			= & x_1'(g(0, \ldots) + h(0, \ldots)) + x_1(g(1, \ldots) + h(1, \ldots))\\
+			= & x_1'[(g + h)(0, \ldots)] + x_1[(g + h)(1, \ldots)]. 
+			\end{aligned}
+		\end{align}
+		\item \begin{align}
+			\begin{aligned}
+			(gh)(x_1, \ldots) = & (g(x_1, \ldots))(h(x_1, \ldots))\\
+			= & (x_1'g(0, \ldots) + x_1g(1, \ldots)) (x_1'h(0, \ldots) + x_1h(1, \ldots))\\
+			= & x_1' (g(0, \ldots)h(0, \ldots)) + x_1(g(1, \ldots)h(1, \ldots))\\
+			= & x_1'[(gh)(0, \ldots)] + x_1[(gh)(1, \ldots)].
+			\end{aligned}
+		\end{align}
+		\item \begin{align}
+			\begin{aligned}
+			(g')(x_1, \ldots) = & (g(x_1, \ldots))'\\
+			= & (x_1'g(0, \ldots) + x_1g(1, \ldots))'\\
+			= & (x_1 + (g(0, \ldots))')(x_1' + (g(1, \ldots))')\\
+			= & x_1'[(g')(0, \ldots)] + x_1[(g')(1, \ldots)] + [(g')(0, \ldots)][(g')(1, \ldots)]\\
+			= & x_1'[(g')(0, \ldots)] + x_1[(g')(1, \ldots)]. 
+			\end{aligned}
+		\end{align}
+	\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Min-term}
+\begin{definition}
+	Any function can be expressed as a \textbf{sum of products} of $n$ literals, called the
+	\textbf{minterms} of the function, by recursive expansion. Alternatively, it can be represented
+	as a \textbf{product of sums} of $n$ literals. called \textbf{maxterms}.
+\end{definition}
+\begin{columns}
+	\column{.8\linewidth}
+	\begin{eg}
+		\label{eg:cofactor}
+		Consider the majority function $f = ab + bc + ac$. \begin{enumerate}
+			\item Write out its cofactor w.r.t. $a$ and $a'$.
+			\item Re-write the function with the cofactors above.
+			\item Write out its cofactor w.r.t. $ab$, $ab'$, $a'b$, and $a'b'$.
+			\item Re-write the function with the cofactors above.
+		\end{enumerate}
+	\end{eg}
+	\column{.3\linewidth}
+	\begin{solution*}
+		\begin{enumerate}
+			\item<2-> $f_{a} = b + c, f_{a'} = bc$.
+			\item<3-> $f = a(b + c) + a'bc$.
+			\item<4-> $f_{ab} = 1, f_{ab'} = c, f_{a'b} = c, f_{a'b'} = 0$.
+			\item<5> $f = ab + ab'c + a'bc$.
+		\end{enumerate}
+	\end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Unate}
+\begin{definition}
+    A function $f(x_1, x_2, \ldots, x_i, \ldots, x_n)$ is (positive/negative) \textbf{unate in variable} $x_i$, if $f_{x_i} \supseteq f_{x_i'} (f_{x_i} \subseteq f_{x_i'})$. Otherwise it is binate (or mixed) in that variable.
+    
+    A function is (positive/negative) \textbf{unate} if it is (positive/negative) unate in all
+    support variables. Otherwise it is binate (or mixed). 
+    
+    Note that stating $f_{x_i} \supseteq f_{x_i'}$ is equivalent to say that the set of minterms of $f_{x_i}$ includes the set of minterms of $f_{x_i'}$, or $f_{x_i} \ge f_{x_i'}$, for all possible assignments to the
+    other variables $x_j \colon j \ne i, j = 1, 2, \ldots, n$. 
+\end{definition}
+\begin{eg}
+	Is $f = a + b + c'$ is positive or negative unate w.r.t. variable $a$, $b$, or $c$?
+\end{eg}
+\onslide<2>\begin{solution*}
+	$f$ is positive unate w.r.t. variable $a$ and $b$.
+	$f$ is negative unate w.r.t. variable $c$.
+\end{solution*}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Quantification}
+\begin{eg}
+    Consider the majority function $f = ab + bc + ac$ with $f_{a} = b + c$ and $f_{a'} = bc$ in~\Cref{eg:cofactor}. Write out \begin{enumerate}
+    	\item the Boolean difference w.r.t. $a$,
+    	\item the universal quantification of $f$ w.r.t. $a$, and
+    	\item the existential quantification of $f$ w.r.t. $a$.
+    \end{enumerate}
+\end{eg}
+\begin{solution*}
+    \begin{enumerate}
+        \item<2-> $\frac{\partial f}{\partial a} = bc' + b'c$.
+        \item<3-> $(\forall a~f) = bc$.
+        \item<4> $(\exists a~f) = b + c$.
+    \end{enumerate}
+\end{solution*}
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
