@@ -1,0 +1,440 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 03}
+\subtitle{Generalized Cofactor}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Orthogonal Function}
+\begin{definition}
+    A set $\{\phi_1, \phi_2, \ldots, \phi_k\}$ of $n$-variable Boolean functions is called \textbf{orthogonal}
+    provided \begin{equation}
+        \label{eq:orthogonal}
+        \phi_i \phi_j = 0, \forall i \ne j \in \{1, 2, \ldots, k\}.
+    \end{equation}
+\end{definition}
+
+\begin{definition}
+    A set $\{\phi_1, \phi_2, \ldots, \phi_k\}$ of $n$-variable Boolean functions is called \textbf{normal}
+    provided \begin{equation}
+    \label{eq:normal}
+    \sum_{i = 1}^{k} \phi_i = 1.
+    \end{equation}
+\end{definition}
+
+\begin{definition}
+    A set $\{\phi_1, \phi_2, \ldots, \phi_k\}$ of $n$-variable Boolean functions is called \textbf{orthonormal}
+    provided~\Cref{eq:orthogonal,eq:normal}.
+\end{definition}
+\end{frame}
+
+\begin{frame}
+\frametitle{Orthonormal Expansion}
+\begin{definition}
+    Let $\{\phi_1, \phi_2, \ldots, \phi_k\}$, be a orthonormal set.
+    An \textbf{orthonormal expansion} of a function $f$ is \begin{equation}
+        \label{eq:oe}
+        f = \sum_{i = 1}^{k} f_{\phi_i} \phi_i.
+    \end{equation}
+    The term $f_{\phi_i}$ is called the \textbf{generalized cofactor} of $f$ w.r.t. $\phi_i, \forall i$.
+    
+    Note that in the special case on a
+    variable $x_i$, the orthonormal functions are just the literals $x_i$ and $x_i'$
+    and the generalized cofactor is the usual cofactor.
+\end{definition}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Generalized Cofactor}
+\begin{theorem}
+    Let $\{\phi_1, \phi_2, \ldots, \phi_k\}$, be a orthonormal set and let $f$
+    be a Boolean function. Then $f$ is given by~\Cref{eq:oe} if and only
+    if \begin{equation}
+    \label{eq:gc}
+    f_{\phi_i} \phi_i = f \phi_i \qquad (\forall i \in \{1, \ldots, k\}).
+    \end{equation}
+\end{theorem}
+\newpage
+\textbf{Proof.} Suppose~\Cref{eq:oe} to be valid. Then, for any element $\phi_j \in \{\phi_1, \phi_2, \ldots, \phi_k\}$,
+\begin{equation}
+    f \phi_j = \sum_{i = 1}^{k} f_{\phi_i} \phi_i \phi_j.
+\end{equation}
+The set $\{\phi_1, \phi_2, \ldots, \phi_k\}$ satisfies the orthogonal-condition~\Cref{eq:orthogonal};
+hence, \begin{equation}
+    f \phi_j = f_{\phi_j} \phi_j,
+\end{equation}
+verifying condition~\Cref{eq:gc}. Suppose on the other hand that~\Cref{eq:gc} holds. Then,
+\begin{equation}
+    \sum_{i = 1}^{k} f_{\phi_i} \phi_i = \sum_{i = 1}^{k} f \phi_i = f \sum_{i = 1}^{k} \phi_i = f.
+\end{equation}
+\end{frame}
+
+\begin{frame}
+\frametitle{Design Synthesis}
+\begin{itemize}
+    \item Register-transfer level (RTL): digital signals and logical operations.
+    \item Netlist: electronic components and connections.
+    \item Synopsys Design Compiler (DC): RTL model to gate-level netlist.
+    \item \texttt{.db} standard-cell library: logic and timing
+\end{itemize}
+
+\begin{itemize}
+    % \item \texttt{.cdl} circuit design language: circuit schematics for each cell
+    \item \texttt{.gds} graphic database system: layout for each cell
+    \item \texttt{.v} Verilog: behavioral specification for each cell
+    \item \texttt{.sp} schematics with extracted parasitics for each cell
+    \item \texttt{.lib} liberty: abstract logical, timing, power view for each cell
+    \item \texttt{.lef} library exchange format: abstract physical view for each cell
+    \item \texttt{.db} binary compiled version of \texttt{.lib} file
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Verilog}
+\begin{columns}
+    \column{.6\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+module NAND2X1 (A, B, Y);
+input  A ;
+input  B ;
+output Y ;
+    and (I0_out, A, B);
+    not (Y, I0_out);
+    
+    specify
+        // delay parameters
+        specparam
+            tplhl$A$Y = 0.2:0.2:0.2,
+            tphlh$A$Y = 0.35:0.35:0.35,
+            tplhl$B$Y = 0.2:0.2:0.2,
+            tphlh$B$Y = 0.34:0.34:0.34;
+        // path delays
+        (A *> Y) = (tphlh$A$Y, tplhl$A$Y);
+        (B *> Y) = (tphlh$B$Y, tplhl$B$Y);
+    endspecify
+endmodule
+\end{lstlisting}
+
+\column{.4\linewidth}
+\begin{itemize}
+    \item Verilog primitive gates
+    \item Delay
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Extracted Parasitics}
+\begin{columns}
+    \column{.6\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+.subckt NAND2X1 vdd Y gnd A B
+M0 Y A vdd vdd pmos w=0.5u l=0.05u
++ ad=0p pd=0u as=0p ps=0u
+M1 vdd B Y vdd pmos w=0.5u l=0.05u
++ ad=0p pd=0u as=0p ps=0u
+M2 a_9_6# A gnd gnd nmos w=0.5u l=0.05u
++ ad=0p pd=0u as=0p ps=0u
+M3 Y B a_9_6# gnd nmos w=0.5u l=0.05u
++ ad=0p pd=0u as=0p ps=0u
+.ends NAND2X1
+    \end{lstlisting}
+    
+    \column{.4\linewidth}
+    \begin{itemize}
+        \item Resistance
+        \item Capacitance
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Liberty}
+\begin{columns}
+    \column{.6\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+cell (NAND2X1) {
+    area : 1.877200;
+    cell_leakage_power : 3.29145;
+    pin(A)  {
+        direction : input;
+        capacitance : 0.00211057;
+        rise_capacitance : 0.00211057;
+        fall_capacitance : 0.00188435;
+    }
+    ...
+    pin(Y)  {
+        direction : output;
+        ...
+        function : "(!(A B))";
+        timing() {
+            related_pin : "A";
+            timing_sense : negative_unate;
+            cell_rise(delay_template_6x6) {
+                index_1 ("0.1, 0.5, 1.2, 3, 4, 5");
+                index_2 ("0.06, 0.24, 0.48, 0.9, 1.2, 1.8");
+                values ( \
+                "0.345107, 0.400669, 0.461807, 0.611732, 0.650215, 0.820245", \
+                ...);
+            }
+    \end{lstlisting}
+    
+    \column{.4\linewidth}
+    \vspace{-1in}
+    \begin{itemize}
+        \item Area
+        \item Leakage power
+        \item Capacitance of each input pin
+        \item Internal power
+        \item Logical functionality
+        \item Timing
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Library Exchange Format}
+\begin{columns}
+    \column{.6\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+MACRO NAND2X1
+    CLASS CORE ;
+    ORIGIN 0 0 ;
+    SIZE 0.76 BY 2.47 ;
+    SYMMETRY X Y ;
+    SITE CoreSite ;
+    PIN A
+        DIRECTION INPUT ;
+        USE SIGNAL ;
+        PORT
+            LAYER metal1 ;
+                RECT 0.045 0.7725 0.235 0.9825 ;
+        END
+    END A
+    ...
+    PIN gnd
+        DIRECTION INOUT ;
+        USE GROUND ;
+        PORT
+            LAYER metal1 ;
+                RECT 0.16 -0.065 0.225 0.7075 ;
+                RECT 0 -0.065 0.76 0.065 ;
+        END
+    END gnd
+    \end{lstlisting}
+    
+    \column{.4\linewidth}
+    \vspace{-1in}
+    \begin{itemize}
+        \item Dimension
+        \item Signal pins
+        \item Power/ground pins
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Set Variables}
+\begin{columns}
+    \column{\linewidth}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+set OSU_FREEPDK [format "%s%s" [getenv "PDK_DIR"] "/osu_soc/lib/files"]
+set target_library "$OSU_FREEPDK/gscl45nm.db"
+set link_library "$OSU_FREEPDK/gscl45nm.db"
+    \end{lstlisting}
+    
+    % \column{.4\linewidth}
+    \begin{itemize}
+        \item \texttt{PDK\_DIR}: process design kit directory
+        \item \texttt{OSU\_FREEPDK}: library file directory
+        \item \texttt{target\_library}: list of technology libraries of components to be used when compiling a design
+        \item \texttt{link\_library}: list of design files and libraries used during linking
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Analyze Files}
+\begin{columns}
+    \column{\linewidth}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+analyze -f verilog $my_verilog_files
+    \end{lstlisting}
+    
+    % \column{.4\linewidth}
+    \begin{itemize}
+        \item Analyzes  the  specified  HDL source files and stores the design templates they define into the specified  library  in  a  format ready  to  specialize  and elaborate to form linkable cells of a full design.
+    \end{itemize}
+
+    \begin{lstlisting}
+Running PRESTO HDLC
+Searching for ./basic_components.v
+Searching for ./cla16.v
+Searching for ./multi.v
+Searching for ./multiplyadd.v
+Compiling source file ./basic_components.v
+Compiling source file ./cla16.v
+Compiling source file ./multi.v
+Compiling source file ./multiplyadd.v
+Presto compilation completed successfully.
+Loading db file '/research/fyyoung/hcli/pl/NCSU-FreePDK45-1.4/FreePDK45/osu_soc/lib/files/gscl45nm.db'
+    \end{lstlisting}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Elaborate Design}
+\begin{columns}
+    \column{\linewidth}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+elaborate $my_toplevel
+    \end{lstlisting}
+    
+    % \column{.4\linewidth}
+    \begin{itemize}
+        \item Builds  a  design from the intermediate format of a Verilog module, a VHDL entity and architecture, or a VHDL configuration.
+    \end{itemize}
+    
+    \begin{lstlisting}
+Loading db file '/opt2/synopsys/syn-J-2014.09-SP5-6/libraries/syn/gtech.db'
+Loading db file '/opt2/synopsys/syn-J-2014.09-SP5-6/libraries/syn/standard.sldb'
+Loading link library 'gscl45nm'
+Loading link library 'gtech'
+Running PRESTO HDLC
+Presto compilation completed successfully.
+Elaborated 1 design.
+Current design is now 'multiplyadd'.
+Information: Building the design 'multi'. (HDL-193)
+Presto compilation completed successfully.
+...
+    \end{lstlisting}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{High-Effort Compile}
+\begin{columns}
+    \column{\linewidth}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+set my_period [expr 1000 / $my_clk_freq_MHz]
+create_clock -period $my_period $my_clock_pin
+
+compile_ultra -incremental
+    \end{lstlisting}
+    
+    % \column{.4\linewidth}
+    \begin{itemize}
+        \item Creates  a  clock object and defines its waveform in the current design.
+        \item Performs  a high-effort compile on the current design for better quality of results (QoR).
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Write File}
+\begin{columns}
+    \column{\linewidth}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+set filename [format "%s%s"  $my_toplevel ".vhh"]
+write_file -f verilog -hierarchy -output $filename
+    \end{lstlisting}
+    
+    % \column{.4\linewidth}
+    \begin{itemize}
+        \item Writes a design netlist or schematic from memory to a file.
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
