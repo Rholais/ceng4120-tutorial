@@ -1,0 +1,10 @@
+# Version:1.0 MMMC View Definition File
+# Do Not Remove Above Line
+set pdk gscl45nm
+set top multiplyadd
+create_library_set -name ${pdk}_ls -timing ${pdk}.tlf
+create_constraint_mode -name ${top}_cm -sdc_files ${top}.sdc
+create_delay_corner -name ${pdk}_dc -library_set ${pdk}_ls
+create_analysis_view -name ${top}_av -constraint_mode ${top}_cm -delay_corner ${pdk}_dc
+set_analysis_view -setup ${top}_av -hold ${top}_av
+
