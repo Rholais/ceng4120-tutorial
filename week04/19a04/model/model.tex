@@ -1,0 +1,296 @@
+\documentclass[acmlarge,screen=true,anonymous=false,11pt]{acmart}
+
+% ======================================================== 
+%          Copyright & Conference setting
+% ======================================================== 
+% copyright
+\setcopyright{none}
+\settopmatter{printacmref=false, printccs=false, printfolios=true}
+
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
+
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+
+\usepackage{cleveref}
+\crefname{mytheorem}{Theorem}{Theorems}
+
+\usepackage{listings}
+
+\usepackage{pgfplots}
+\usepackage{textgreek}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{patterns}
+
+\usepackage{version}
+% \excludeversion{proof}
+\newtheorem*{solution*}{Solution}
+\excludeversion{solution*}
+
+% ==== defined colors
+\definecolor{myorange}{RGB}{244,106,18} %F47012
+\definecolor{myblue}{RGB}{0,111,190}    %006FBE
+\definecolor{mygreen}{RGB}{0,127,128}   %007F80
+\definecolor{myred}{RGB}{228,46,36}     %E42E24
+\definecolor{myyellow}{RGB}{198,148,34} %C69422
+\definecolor{mydark}{RGB}{114,44,114}   %722C72
+\definecolor{mymiddle}{RGB}{144,44,144} %902C90
+\definecolor{mylight}{RGB}{167,44,167}  %A72CA7
+
+\definecolor{light-cayenne}{RGB}{177,0,28} %B1001C
+\definecolor{light-mocha}{RGB}{179,68,0}   %B34400
+\definecolor{ocean}{RGB}{0,55,118}         %003776
+
+\iffalse
+\newtoggle{screen}
+\toggletrue{screen}
+\AtEndPreamble{%
+\iftoggle{screen}
+{
+    \hypersetup{colorlinks, % 01/2018 Bei: change link colors all to blue
+        linkcolor=blue,
+        citecolor=blue,
+        urlcolor=blue,
+        filecolor=blue}
+}
+{
+    \hypersetup{hidelinks}
+}}
+\fi
+
+\begin{document}
+\title{CENG 4120 Assignment 1}
+\subtitle{Computer-Aided Design for Very Large Scale Integrated Circuits \\ Due Date: February 18 (Monday) 5:00pm}
+
+\maketitle
+
+\section{Library Analysis}
+\href{https://www.eda.ncsu.edu/wiki/FreePDK45:Contents}{FreePDK 45nm Standard Cell Libaray} is used in this homework.
+Open a terminal in a Department machine and upload \texttt{19hw1-src.zip}.
+Extract the file with command \texttt{unzip 19hw1-src.zip}.
+Open liberty file \texttt{gscl45nm.lib} in the directory with a text editor.
+\begin{enumerate}
+    \item Find cell \texttt{INVX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $1.407900$.
+    \end{solution*}
+    \begin{example}
+        What is the function of pin \texttt{Y}?
+    \end{example}
+    \begin{solution*}
+        (!A).
+    \end{solution*}
+    \item Find cell \texttt{FAX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $8.916700$.
+    \end{solution*}
+    \begin{example}
+        What is the function of pin \texttt{YC}?
+    \end{example}
+    \begin{solution*}
+        (((A B)+(B C))+(C A)).
+    \end{solution*}
+    \item Find cell \texttt{DFFPOSX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $7.978100$
+    \end{solution*}
+    \begin{example}
+        What is the cell leakage power?
+    \end{example}
+    \begin{solution*}
+        $54.9774~\mathrm{nW}$
+    \end{solution*}
+\end{enumerate}
+
+\section{Synthesis}
+Change to the \texttt{19hw1-src} directory. Run \texttt{source setup.sh} in the directory to setup the environment variables of Synopsys Design Compiler. Synthesis 2-Bit Carry Look Ahead Adder \texttt{cla2.v} with library \texttt{gscl45nm.db}.
+\begin{example}
+    Draw a gate-level schematic of the synthesized net-list.
+\end{example}
+\begin{example}
+    What is the total cell area?
+\end{example}
+\begin{solution*}
+    $17.833401$.
+\end{solution*}
+\begin{example}
+    What is the total power consumption?
+\end{example}
+\begin{solution*}
+    $7411.1~\mathrm{nW}$.
+\end{solution*}
+\begin{example}
+    Attach all scripts you used in file \texttt{cla2.tcl}.
+\end{example}
+\begin{solution*}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+        # Compile Script for Synopsys
+        # dc_shell-t -f cla2.tcl
+        set top cla2
+        set target_library "gscl45nm.db"
+        set link_library "gscl45nm.db"
+        analyze -f verilog ${top}.v
+        elaborate ${top}
+        compile_ultra
+        set filename [format "%s%s"  ${top} ".vh"]
+        write_file -f verilog -output $filename
+        redirect timing.rep { report_timing }
+        redirect cell.rep { report_cell }
+        redirect power.rep { report_power }
+        quit
+    \end{lstlisting}
+\end{solution*}
+\section{Timing Optimization}
+Design a 4-Bit Full Adder with five parameters using Verilog: a 4-bit output summation \texttt{sum}, a 1-bit output carry-out \texttt{cout}, two 4-bit input operands \texttt{a} and \texttt{b}, a 1-bit input carry-in \texttt{cin}. Synthesis your designed adder.
+\begin{example}
+    Attach your Verilog in file \texttt{cla4.v}.
+\end{example}
+\begin{solution*}
+    \lstset{language=verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+        module cla4 (sum, cout, a, b, cin);
+        
+        output  [3:0]   sum;
+        output          cout;
+        input   [3:0]   a;
+        input   [3:0]   b;
+        input           cin;
+        
+        wire    [2:0]   c;
+        wire    [3:0]   g;
+        wire    [3:0]   p;
+        
+        wire            and100_out;
+        wire            and110_out;
+        wire            and111_out;
+        wire            and120_out;
+        wire            and121_out;
+        wire            and122_out;
+        wire            and130_out;
+        wire            and131_out;
+        wire            and132_out;
+        wire            and133_out;
+        
+        and and00(g[0], a[0], b[0]);
+        and and01(g[1], a[1], b[1]);
+        and and02(g[2], a[2], b[2]);
+        and and03(g[3], a[3], b[3]);
+        
+        or or00(p[0], a[0], b[0]);
+        or or01(p[1], a[1], b[1]);
+        or or02(p[2], a[2], b[2]);
+        or or03(p[3], a[3], b[3]);
+        
+        and and100(and100_out, p[0], cin);
+        
+        and and110(and110_out, p[1], p[0], cin);
+        and and111(and111_out, p[1], g[0]);
+        
+        and and120(and120_out, p[2], p[1], p[0], cin);
+        and and121(and121_out, p[2], p[1], g[0]);
+        and and122(and122_out, p[2], g[1]);
+        
+        and and130(and130_out, p[3], p[2], p[1], p[0], cin);
+        and and131(and131_out, p[3], p[2], p[1], g[0]);
+        and and132(and132_out, p[3], p[2], g[1]);
+        and and133(and133_out, p[3], g[2]);
+        
+        or  or20(c[0], g[0], and100_out);
+        or  or21(c[1], g[1], and110_out, and111_out);
+        or  or22(c[2], g[2], and120_out, and121_out, and122_out);
+        or  or23(cout, g[3], and130_out, and131_out, and132_out, and133_out);
+        
+        xor xor30(sum[0], a[0], b[0], cin);
+        xor xor31(sum[1], a[1], b[1], c[0]);
+        xor xor32(sum[2], a[2], b[2], c[1]);
+        xor xor33(sum[3], a[3], b[3], c[2]);
+        
+        endmodule
+    \end{lstlisting}
+\end{solution*}
+\begin{example}
+    What is the total cell area?
+\end{example}
+\begin{solution*}
+    $35.666801$.
+\end{solution*}
+\begin{example}
+    What is the total power consumption?
+\end{example}
+\begin{solution*}
+    $16553~\mathrm{nW}$.
+\end{solution*}
+
+Setup a timing constraint 0.28 ns from operand \texttt{a} to summation \texttt{sum} and synthesis again.
+
+\begin{example}
+    What is the total cell area?
+\end{example}
+\begin{solution*}
+    79.780998
+\end{solution*}
+\begin{example}
+    What is the total power consumption?
+\end{example}
+\begin{solution*}
+    $27998~\mathrm{nW}$.
+\end{solution*}
+\begin{example}
+    What is the slack?
+\end{example}
+\begin{solution*}
+    $0.05$.
+\end{solution*}
+\begin{example}
+    Attach all scripts you used in file \texttt{cla4.tcl}.
+\end{example}
+\begin{solution*}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+        # Compile Script for Synopsys
+        # dc_shell-t -f cla4.tcl
+        set top cla4
+        set target_library "gscl45nm.db"
+        set link_library "gscl45nm.db"
+        
+        analyze -f verilog ${top}.v
+        elaborate ${top}
+        compile_ultra
+        set filename [format "%s%s"  ${top} ".vh"]
+        write_file -f verilog -output $filename
+        redirect timing.rep { report_timing }
+        redirect cell.rep { report_cell }
+        redirect power.rep { report_power }
+        
+        set_max_delay -from {a*} -to {s*} 0.28
+        compile_ultra
+        set filename [format "%s%s"  ${top} "-fast.vh"]
+        write_file -f verilog -output $filename
+        redirect "timing-fast.rep" { report_timing }
+        redirect "cell-fast.rep" { report_cell }
+        redirect "power-fast.rep" { report_power }
+        
+        quit
+    \end{lstlisting}
+\end{solution*}
+
+\end{document}
