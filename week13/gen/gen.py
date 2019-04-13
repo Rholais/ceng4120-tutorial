@@ -10,7 +10,7 @@ n_ch1ss = [0,   10,     6,      8,      8,      5,      6,      7]
 n_ch2ss = [0,   10,     3,      3,      4,      3,      4,      5]
 n_ch3ss = [0,   10,     3,      3,      4,      3,      4,      5]
 n_pinss = [0,   4000,   5000,   6000,   7000,   8000,   9000,   10000]
-dists = [0,     300000, 420000, 430000, 450000, 480000, 510000, 530000]
+dists = [0,     300000, 300000, 420000, 440000, 470000, 500000, 520000]
 clones = [0,    0.2,    0.2,    0.2,    0.2,    0.2,    0.2,    0.2]
 loads = [0,     2000,   1200,   1000,   800,    600,    600,    600]
 
@@ -54,7 +54,7 @@ def check_vio(taps, pins, tap_group, dist, n_groups, clone, load, name):
     return is_slower, is_larger, is_heavier
 
 
-for i in range(1, 8):
+for i in range(2, 8):
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -78,14 +78,14 @@ for i in range(1, 8):
     groups = np.zeros((n_groups, 6), dtype=np.int64)
     for j in range(0, n_groups):
         for k in range(0, 2):
-            groups[j, k] = random.randrange(die / 8)
+            groups[j, k] = random.randrange(die / 4)
 
     pins = np.zeros((n_pins, 5), dtype=np.int64)
     for j in range(0, n_pins):
         g = random.randrange(n_groups)
         pins[j, 2] = g
         for k in range(0, 2):
-            pins[j, k] = groups[g, k] + random.randrange(die * 7 / 8)
+            pins[j, k] = groups[g, k] + random.randrange(die * 3 / 4)
 
     check_dup(pins[:, 0:2], 'pin')
 
@@ -187,14 +187,14 @@ for i in range(1, 8):
                 cpg = centers[pg, k]
                 cppg = centers[ppg, k]
                 pins[j, k] = pins[j, k] * 0.90 + cg * 0.01 + cpg * \
-                    0.04 + cppg * 0.01 + random.randrange(die) * 0.001
+                    0.03 + cppg * 0.02 + random.randrange(die) * 0.001
                 if cg > c[k]:
                     pins[j, k] += (die - 1) * 0.04
                 elif cg == c[k]:
                     pins[j, k] += c[k] * 0.04
 
     print(tap_group)
-    f = open('test{0}.input'.format(i), 'w')
+    f = open('test{0}.in'.format(i), 'w')
     f.write('MAX_RUNTIME 3600\n')
     f.write('MAX_DISTANCE {0}\n'.format(dist))
     f.write('MAX_CLONE {0}\n'.format(clone))
