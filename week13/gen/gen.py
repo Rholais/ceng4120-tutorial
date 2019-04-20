@@ -10,9 +10,9 @@ n_ch1ss = [0,   10,     6,      8,      8,      5,      6,      7]
 n_ch2ss = [0,   10,     3,      3,      4,      3,      4,      5]
 n_ch3ss = [0,   10,     3,      3,      4,      3,      4,      5]
 n_pinss = [0,   4000,   5000,   6000,   7000,   8000,   9000,   10000]
-dists = [0,     300000, 300000, 410000, 420000, 450000, 480000, 500000]
+dists = [0,     300000, 300000, 410000, 420000, 440000, 470000, 490000]
 clones = [0,    0.2,    0.2,    0.2,    0.2,    0.2,    0.2,    0.2]
-loads = [0,     2000,   1200,   1000,   800,    600,    600,    600]
+loads = [0,     2000,   1200,   1000,   800,    800,    800,    800]
 
 
 def check_dup(a, name):
@@ -54,7 +54,7 @@ def check_vio(taps, pins, tap_group, dist, n_groups, clone, load, name):
     return is_slower, is_larger, is_heavier
 
 
-for i in range(4, 8):
+for i in range(6, 8):
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -193,7 +193,7 @@ for i in range(4, 8):
                 elif cg == c[k]:
                     pins[j, k] += c[k] * 0.05
 
-    print(tap_group)
+    print(np.sum(tap_group.sum(axis=1) > 0))
     f = open('test{0}.in'.format(i), 'w')
     f.write('MAX_RUNTIME 3600\n')
     f.write('MAX_DISTANCE {0}\n'.format(dist / 1.01))
