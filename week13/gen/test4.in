@@ -2,6 +2,7 @@ MAX_RUNTIME 3600
 MAX_DISTANCE 420000
 MAX_CLONE 0.34
 MAX_LOAD 1200
+NUM_GROUPS 40
 
 TAPS 20
     TAP 0 375785 274506
@@ -25,89 +26,6 @@ TAPS 20
     TAP 18 165479 472808
     TAP 19 109299 340548
 END TAPS
-
-GROUPS 40
-    GROUP 0
-        GROUP 8
-        END 8
-        GROUP 9
-        END 9
-        GROUP 10
-        END 10
-        GROUP 11
-        END 11
-    END 0
-    GROUP 1
-        GROUP 12
-        END 12
-        GROUP 13
-        END 13
-        GROUP 14
-        END 14
-        GROUP 15
-        END 15
-    END 1
-    GROUP 2
-        GROUP 16
-        END 16
-        GROUP 17
-        END 17
-        GROUP 18
-        END 18
-        GROUP 19
-        END 19
-    END 2
-    GROUP 3
-        GROUP 20
-        END 20
-        GROUP 21
-        END 21
-        GROUP 22
-        END 22
-        GROUP 23
-        END 23
-    END 3
-    GROUP 4
-        GROUP 24
-        END 24
-        GROUP 25
-        END 25
-        GROUP 26
-        END 26
-        GROUP 27
-        END 27
-    END 4
-    GROUP 5
-        GROUP 28
-        END 28
-        GROUP 29
-        END 29
-        GROUP 30
-        END 30
-        GROUP 31
-        END 31
-    END 5
-    GROUP 6
-        GROUP 32
-        END 32
-        GROUP 33
-        END 33
-        GROUP 34
-        END 34
-        GROUP 35
-        END 35
-    END 6
-    GROUP 7
-        GROUP 36
-        END 36
-        GROUP 37
-        END 37
-        GROUP 38
-        END 38
-        GROUP 39
-        END 39
-    END 7
-END GROUPS
 
 PINS 7000
     PIN 0 354778 354045 31
