@@ -5,6 +5,7 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input")
+parser.add_argument("output")
 args = parser.parse_args()
 
 with open(args.input) as f:
@@ -44,4 +45,9 @@ with open(args.input) as f:
             continue
         else:
             print(l)
+
+with open(args.output, 'w') as f:
+    for i in range(0, pins.shape[0]):
+        d = np.absolute(taps - pins[i, 0:2]).sum(axis=1)
+        f.write('{0}\t{1}\n'.format(i, d.argmin()))
 
