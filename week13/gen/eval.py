@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import numpy as np
@@ -70,7 +70,8 @@ for i in range(0, num_taps):
     d = max(d, np.absolute(pin[:, 0:2] - taps[i]).sum(axis=1).max())
     g += np.unique(pin[:, 2]).shape[0]
     l = max(l, pin.shape[0])
-    h += np.sum(pin[0:2].max(axis=0) - pin[0:2].min(axis=0))
+    p = np.vstack((taps[i], pin[:, 0:2]))
+    h += np.sum(p.max(axis=0) - p.min(axis=0))
 
 c = g / num_groups - 1
 print('max dist : {0}'.format(d))
