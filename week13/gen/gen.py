@@ -14,7 +14,7 @@ n_grpss = [0,   10,         24,         32,         40,         41,         126,
 n_pinss = [0,   4000,       5000,       6000,       7000,       7000,       9000,       7000,       7400,
            0,   7800,       8200,       8600,       9000,       9400,       9700,       10000]
 dists = [0,     300000,     300000,     410000,     420000,     460000,     470000,     480000,     490000,
-         0,     500000,     510000,     520000,     530000,     540000,     550000,     560000]
+         0,     500000,     600000,     700000,     800000,     900000,     1000000,    1100000]
 clones = [0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2,
           0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2]
 loads = [0,     2000,       1200,       1000,       800,        2100,       800,        600,        600,
@@ -53,7 +53,7 @@ def check_vio(taps, pins, tap_grp, dist, n_grps, clone, load, name):
     return is_slower, is_larger, is_heavier
 
 
-for i in [10, 11, 12, 13, 14, 15, 16]:
+for i in [15, 16]:
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -161,16 +161,16 @@ for i in [10, 11, 12, 13, 14, 15, 16]:
         cga = abs(cg - c) / cgm
         for j in range(0, n_pins):
             for k in range(0, 2):
-                pins[j, k] = (pins[j, k] - c[k]) * 0.972 + (cg[j, k] -
-                                                            c[k]) * 0.035 + (random.randrange(die) - c[k]) * 0.001
+                pins[j, k] = (pins[j, k] - c[k]) * 0.965 + (cg[j, k] -
+                                                            c[k]) * 0.038 + (random.randrange(die) - c[k]) * 0.002
                 if cg[j, k] > c[k]:
-                    pins[j, k] += (die * cga[j, k] * 0.007)
+                    pins[j, k] += (die * cga[j, k] * 0.009)
                 elif cg[j, k] < c[k]:
-                    pins[j, k] -= (die * cga[j, k] * 0.007)
+                    pins[j, k] -= (die * cga[j, k] * 0.009)
                 elif random.randrange(2):
-                    pins[j, k] += (die * cga[j, k] * 0.007)
+                    pins[j, k] += (die * cga[j, k] * 0.009)
                 else:
-                    pins[j, k] -= (die * cga[j, k] * 0.007)
+                    pins[j, k] -= (die * cga[j, k] * 0.009)
 
         pins[:, 0:2] += (die // 2)
 
