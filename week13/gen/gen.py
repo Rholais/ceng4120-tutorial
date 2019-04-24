@@ -53,7 +53,7 @@ def check_vio(taps, pins, tap_grp, dist, n_grps, clone, load, name):
     return is_slower, is_larger, is_heavier
 
 
-for i in [8, 10, 11, 12, 13, 14, 15, 16]:
+for i in [10, 11, 12, 13, 14, 15, 16]:
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -113,8 +113,8 @@ for i in [8, 10, 11, 12, 13, 14, 15, 16]:
             for k in range(0, 2):
                 p = pins[idx, k]
                 grps[j, k + 2] = p.min()
-                grps[j, k + 4] = p.mean()
                 grps[j, k + 6] = p.max()
+                grps[j, k + 4] = (grps[j, k + 2] + grps[j, k + 6]) / 2
 
             tap = np.zeros((n_taps, 3), dtype=int)
             for k in range(0, n_taps):
@@ -161,12 +161,16 @@ for i in [8, 10, 11, 12, 13, 14, 15, 16]:
         cga = abs(cg - c) / cgm
         for j in range(0, n_pins):
             for k in range(0, 2):
-                pins[j, k] = (pins[j, k] - c[k]) * 0.976 + (cg[j, k] -
-                                                            c[k]) * 0.012 + (random.randrange(die) - c[k]) * 0.001
+                pins[j, k] = (pins[j, k] - c[k]) * 0.972 + (cg[j, k] -
+                                                            c[k]) * 0.035 + (random.randrange(die) - c[k]) * 0.001
                 if cg[j, k] > c[k]:
-                    pins[j, k] += (die * cga[j, k] * 0.006)
+                    pins[j, k] += (die * cga[j, k] * 0.007)
                 elif cg[j, k] < c[k]:
-                    pins[j, k] -= (die * cga[j, k] * 0.006)
+                    pins[j, k] -= (die * cga[j, k] * 0.007)
+                elif random.randrange(2):
+                    pins[j, k] += (die * cga[j, k] * 0.007)
+                else:
+                    pins[j, k] -= (die * cga[j, k] * 0.007)
 
         pins[:, 0:2] += (die // 2)
 
@@ -174,7 +178,7 @@ for i in [8, 10, 11, 12, 13, 14, 15, 16]:
     plt.scatter(pins[:, 0], pins[:, 1], c=pins[:, 2], alpha=0.5)
     plt.show()
 
-    f = open('test{0}.in'.format(i), 'w')
+    f = open('test{0}.in'.format(i - 1), 'w')
     f.write('MAX_RUNTIME 3600\n')
     f.write('MAX_DISTANCE {0}\n'.format(dist / 1.02))
     f.write('MAX_CLONE {0}\n'.format(clone / 1.00))
