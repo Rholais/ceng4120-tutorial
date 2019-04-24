@@ -53,7 +53,7 @@ def check_vio(taps, pins, tap_grp, dist, n_grps, clone, load, name):
     return is_slower, is_larger, is_heavier
 
 
-for i in [7, 8, 10, 11, 12, 13, 14, 15, 16]:
+for i in [8, 10, 11, 12, 13, 14, 15, 16]:
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -124,7 +124,8 @@ for i in [7, 8, 10, 11, 12, 13, 14, 15, 16]:
                 if taps[k, 0] < grps[j, 2] or taps[k, 1] < grps[j, 3] or taps[k, 0] > grps[j, 6] or taps[k, 1] > grps[j, 7]:
                     tap[k, 2] = 1
 
-            t = np.lexsort((tap[:, 1], tap[:, 0], tap[:, 2]))[0]
+            t = np.lexsort(
+                (tap[:, 1], tap[:, 0], tap[:, 2], tap[:, 0] > load))[0]
             grps[j, 8] = t
             taps[t, 2] += s
 
