@@ -5,20 +5,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-dies = [0,      200000,     400000,     500000,     600000,     800000,     900000,
-        0,      1000000,    1100000,    1200000,    1300000,    1400000,    1500000]
-n_tapss = [0,   4,          8,          12,         20,         20,         28,
-           0,   22,         24,         26,         28,         30,         32]
-n_grpss = [0,   10,         24,         32,         40,         41,         126,
-           0,   70,         99,         128,        157,        186,        215]
-n_pinss = [0,   4000,       5000,       6000,       7000,       7000,       9000,
-           0,   7500,       8000,       8500,       9000,       9500,       10000]
-dists = [0,     300000,     300000,     410000,     420000,     460000,     470000,
-         0,     480000,     490000,     500000,     510000,     520000,     530000]
-clones = [0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2,
-          0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2]
-loads = [0,     2000,       1200,       1000,       800,        2100,       800,
-         0,     2100,       2100,       2100,       2100,       2100,       2100]
+dies = [0,      200000,     400000,     500000,     600000,     800000,     900000,     1000000,    1100000,
+        0,      1200000,    1300000,    1400000,    1500000,    1600000,    1700000,    1800000]
+n_tapss = [0,   4,          8,          12,         20,         20,         28,         20,         22,
+           0,   24,         26,         28,         29,         30,         31,         32]
+n_grpss = [0,   10,         24,         32,         40,         41,         126,        42,         63,
+           0,   84,         105,        126,        147,        168,        189,        210]
+n_pinss = [0,   4000,       5000,       6000,       7000,       7000,       9000,       7000,       7400,
+           0,   7800,       8200,       8600,       9000,       9400,       9700,       10000]
+dists = [0,     300000,     300000,     410000,     420000,     460000,     470000,     480000,     490000,
+         0,     500000,     510000,     520000,     530000,     540000,     550000,     560000]
+clones = [0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2,
+          0,    0.2,        0.2,        0.2,        0.2,        0.2,        0.2,        0.2]
+loads = [0,     2000,       1200,       1000,       800,        2100,       800,        600,        600,
+         0,     600,        600,        600,        600,        600,        600,        600]
 
 
 def check_dup(a, name):
@@ -32,35 +32,28 @@ def check_vio(taps, pins, tap_grp, dist, n_grps, clone, load, name):
     # print('check {0}'.format(name))
 
     is_slower = False
-    d = np.sum(pins[:, 3] > dist)
+    d = np.sum(pins[:, 4] > dist)
     if d >= 2:
-        # print('{0} distances are longer than {1}'.format(d, dist))
         is_slower = True
     elif d == 1:
-        # print('one distance is longer than {0}'.format(dist))
         is_slower = True
-    # else:
-    #     print('max distance is {0}'.format(pins[:, 3].max()))
 
     is_larger = False
     c = tap_grp.sum() / n_grps - 1
     if c > clone:
-        # print('clone {0} is more than {1}'.format(c, clone))
         is_larger = True
 
     is_heavier = False
     l = np.sum(taps[:, 2] > load)
     if l >= 2:
-        # print('{0} loads are heavier than {1}'.format(l, load))
         is_heavier = True
     elif l == 1:
-        # print('one load is heavier than {0}'.format(load))
         is_heavier = True
 
     return is_slower, is_larger, is_heavier
 
 
-for i in [5, 8, 9, 10, 11, 12, 13]:
+for i in [7, 8, 10, 11, 12, 13, 14, 15, 16]:
     die = dies[i]
     n_taps = n_tapss[i]
     taps = np.zeros((n_taps, 3), dtype=np.int64)
@@ -72,7 +65,7 @@ for i in [5, 8, 9, 10, 11, 12, 13]:
 
     n_pins = n_pinss[i]
     n_grps = n_grpss[i]
-    grps = np.zeros((n_grps, 6), dtype=np.int64)
+    grps = np.zeros((n_grps, 9), dtype=np.int64)
     for j in range(0, n_grps):
         for k in range(0, 2):
             grps[j, k] = random.randrange(die / 4)
@@ -96,9 +89,9 @@ for i in [5, 8, 9, 10, 11, 12, 13]:
         tap_grp = np.zeros((n_taps, n_grps), dtype=int)
         for j in range(0, n_pins):
             d = np.absolute(taps[:, 0:2] - pins[j, 0:2]).sum(axis=1)
-            pins[j, 3] = d.min()
             t = d.argmin()
-            pins[j, 4] = t
+            pins[j, 3] = t
+            pins[j, 4] = d.min()
             taps[t, 2] += 1
             g = pins[j, 2]
             tap_grp[t, g] = 1
@@ -108,32 +101,39 @@ for i in [5, 8, 9, 10, 11, 12, 13]:
         if not (is_slower or is_larger or is_heavier):
             break
 
-        grps[:, 2:5] = np.zeros((n_grps, 3), dtype=np.int64)
-        for j in range(0, n_pins):
-            g = pins[j, 2]
-            grps[g, 2:4] += pins[j, 0:2]
-            grps[g, 4] += 1
-
-        if not grps[:, 4].min():
-            print('group {0} is empty'.format(grps[:, 2].argmin()))
-
-        centers = np.zeros((n_grps, 2))
-        for j in range(0, 2):
-            centers[:, j] = grps[:, j + 2] / grps[:, 4]
-
+        grps[:, 2:8] = 0
         taps[:, 2] = 0
         for j in range(0, n_grps):
-            t = np.absolute(taps[:, 0:2] - centers[j, 0:2]
-                            ).sum(axis=1).argmin()
-            grps[j, 5] = t
-            taps[t, 2] += grps[j, 4]
+            idx = pins[:, 2] == j
+            s = idx.sum()
+            if s == 0:
+                print('group {0} is empty'.format(j))
+                continue
+
+            for k in range(0, 2):
+                p = pins[idx, k]
+                grps[j, k + 2] = p.min()
+                grps[j, k + 4] = p.mean()
+                grps[j, k + 6] = p.max()
+
+            tap = np.zeros((n_taps, 3), dtype=int)
+            for k in range(0, n_taps):
+                tap[k, 0] = taps[k, 2]
+                tap[k, 1] = np.absolute(
+                    taps[k, 0:2] - grps[j, 4:6]).sum()
+                if taps[k, 0] < grps[j, 2] or taps[k, 1] < grps[j, 3] or taps[k, 0] > grps[j, 6] or taps[k, 1] > grps[j, 7]:
+                    tap[k, 2] = 1
+
+            t = np.lexsort((tap[:, 1], tap[:, 0], tap[:, 2]))[0]
+            grps[j, 8] = t
+            taps[t, 2] += s
 
         tap_grp = np.zeros((n_taps, n_grps), dtype=int)
         for j in range(0, n_pins):
             g = pins[j, 2]
-            t = grps[g, 5]
-            pins[j, 3] = np.absolute(taps[t, 0:2] - pins[j, 0:2]).sum()
-            pins[j, 4] = t
+            t = grps[g, 8]
+            pins[j, 3] = t
+            pins[j, 4] = np.absolute(taps[t, 0:2] - pins[j, 0:2]).sum()
             tap_grp[t, g] = 1
 
         s, l, h = check_vio(taps, pins, tap_grp, dist,
@@ -154,21 +154,20 @@ for i in [5, 8, 9, 10, 11, 12, 13]:
         if is_heavier:
             load *= 1.01
 
+        cg = grps[pins[:, 2], 4:6]
         c = pins[:, 0:2].mean(axis=0, dtype=float)
-        cgm = math.sqrt(np.power(centers - c, 2).sum(axis=1).max())
+        cgm = math.sqrt(np.power(grps[:, 4:6] - c, 2).sum(axis=1).max())
+        cga = abs(cg - c) / cgm
         for j in range(0, n_pins):
-            g = pins[j, 2]
-            cg = centers[g]
-            cga = abs(cg - c) / cgm
-            pins[j, 0:2] = (pins[j, 0:2] - c) * 0.984 + (cg - c) * 0.008 + \
-                (random.randrange(die) - c) * 0.001
             for k in range(0, 2):
-                if cg[k] > c[k]:
-                    pins[j, k] += (die * cga[k] * 0.004)
-                elif cg[k] < c[k]:
-                    pins[j, k] -= (die * cga[k] * 0.004)
+                pins[j, k] = (pins[j, k] - c[k]) * 0.976 + (cg[j, k] -
+                                                            c[k]) * 0.012 + (random.randrange(die) - c[k]) * 0.001
+                if cg[j, k] > c[k]:
+                    pins[j, k] += (die * cga[j, k] * 0.006)
+                elif cg[j, k] < c[k]:
+                    pins[j, k] -= (die * cga[j, k] * 0.006)
 
-                pins[j, k] += c[k]
+        pins[:, 0:2] += (die // 2)
 
     print(np.sum(tap_grp.sum(axis=1) > 0))
     plt.scatter(pins[:, 0], pins[:, 1], c=pins[:, 2], alpha=0.5)
