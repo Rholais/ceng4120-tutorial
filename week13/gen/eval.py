@@ -54,7 +54,17 @@ with open(args.output) as f:
         if len(l) == 0:
             continue
         else:
-            pins[int(l[0]), 3] = int(l[1])
+            pin_idx = int(l[0])
+            if pin_idx < 0 or pin_idx >= num_pins:
+                print('score    : invalid pin index {0}'.format(pin_idx))
+                exit(0)
+
+            tap_idx = int(l[1])
+            if tap_idx < 0 or tap_idx >= num_taps:
+                print('score    : invalid tap index {0}'.format(tap_idx))
+                exit(0)
+
+            pins[pin_idx, 3] = tap_idx
 
 d = 0
 g = 0
