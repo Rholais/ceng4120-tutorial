@@ -1,0 +1,265 @@
+\documentclass[acmlarge,screen=true,anonymous=false,11pt]{acmart}
+
+% ======================================================== 
+%          Copyright & Conference setting
+% ======================================================== 
+% copyright
+\setcopyright{none}
+\settopmatter{printacmref=false, printccs=false, printfolios=true}
+
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
+
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+
+\usepackage{cleveref}
+\crefname{mytheorem}{Theorem}{Theorems}
+
+\usepackage{listings}
+
+\usepackage{pgfplots}
+\usepackage{textgreek}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{patterns}
+
+\usepackage{version}
+% \excludeversion{proof}
+\newtheorem*{solution*}{Solution}
+% \excludeversion{solution*}
+
+% ==== defined colors
+\definecolor{myorange}{RGB}{244,106,18} %F47012
+\definecolor{myblue}{RGB}{0,111,190}    %006FBE
+\definecolor{mygreen}{RGB}{0,127,128}   %007F80
+\definecolor{myred}{RGB}{228,46,36}     %E42E24
+\definecolor{myyellow}{RGB}{198,148,34} %C69422
+\definecolor{mydark}{RGB}{114,44,114}   %722C72
+\definecolor{mymiddle}{RGB}{144,44,144} %902C90
+\definecolor{mylight}{RGB}{167,44,167}  %A72CA7
+
+\definecolor{light-cayenne}{RGB}{177,0,28} %B1001C
+\definecolor{light-mocha}{RGB}{179,68,0}   %B34400
+\definecolor{ocean}{RGB}{0,55,118}         %003776
+
+\iffalse
+\newtoggle{screen}
+\toggletrue{screen}
+\AtEndPreamble{%
+\iftoggle{screen}
+{
+    \hypersetup{colorlinks, % 01/2018 Bei: change link colors all to blue
+        linkcolor=blue,
+        citecolor=blue,
+        urlcolor=blue,
+        filecolor=blue}
+}
+{
+    \hypersetup{hidelinks}
+}}
+\fi
+
+\begin{document}
+\title{CENG 4120 Assignment 3}
+\subtitle{Computer-Aided Design for Very Large Scale Integrated Circuits \\ Due Date: April 15 (Monday) 5:00pm}
+
+\maketitle
+
+\section{Library Analysis}
+\href{https://www.eda.ncsu.edu/wiki/FreePDK45:Contents}{FreePDK 45nm Standard Cell Libaray}
+is used in this homework.
+Connect to a Department Unix server with
+\href{https://download.mobatek.net/1112019010310554/MobaXterm_Portable_v11.1.zip}{MobaXterm}
+or any other Secure Shell (SSH) client you are familiar with.
+Upload \texttt{19hw3-src.zip} to the Department Unix server.
+Extract the file with command \texttt{unzip 19hw3-src.zip}.
+Open liberty file \texttt{gscl45nm.tlf} in the directory with a text editor.
+\begin{enumerate}
+    \item Find cell \texttt{INVX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $1.407900~\mathrm{\mu m^2}$.
+    \end{solution*}
+    \begin{example}
+        What is the capacitance of pin \texttt{A}?
+    \end{example}
+    \begin{solution*}
+        $0.001551~\mathrm{pF}$.
+    \end{solution*}
+    \begin{example}
+        What is the function of pin \texttt{Y}?
+    \end{example}
+    \begin{solution*}
+        (!A).
+    \end{solution*}
+    \item Find cell \texttt{FAX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $8.916700~\mathrm{\mu m^2}$.
+    \end{solution*}
+    \begin{example}
+        What is the capacitance of pin \texttt{B}?
+    \end{example}
+    \begin{solution*}
+        $0.010305~\mathrm{pF}$.
+    \end{solution*}
+    \begin{example}
+        What is the function of pin \texttt{YC}?
+    \end{example}
+    \begin{solution*}
+        (((A B)+(B C))+(C A)).
+    \end{solution*}
+    \item Find cell \texttt{DFFPOSX1}.
+    \begin{example}
+        What is the cell area?
+    \end{example}
+    \begin{solution*}
+        $7.978100~\mathrm{\mu m^2}$.
+    \end{solution*}
+    \begin{example}
+        What is the cell leakage power?
+    \end{example}
+    \begin{solution*}
+        $54.977402~\mathrm{nW}$
+    \end{solution*}
+    \begin{example}
+        What is the capacitance of pin \texttt{D}?
+    \end{example}
+    \begin{solution*}
+        $0.001816~\mathrm{pF}$.
+    \end{solution*}
+\end{enumerate}
+
+\section{Physical Design}
+\label{sec:pd}
+Change to the \texttt{19hw3-src} directory. Run \texttt{source setup.sh} in the directory to setup the environment variables of Cadence Innovus. Initialize a design with synthesized Verilog net-list \texttt{multiplyadd.vh}, library exchange file \texttt{gscl45nm.lef}, MMMC file \texttt{multiplyadd.view}, ground net \texttt{gnd} and power net \texttt{vdd}.
+\begin{example}
+    Floor-plan the design with aspect ratio 1.0, row density 0.6, core margin $20~\mathrm{\mu m}$ in all four directions. What are the width and height of the placement grid?
+\end{example}
+\begin{solution*}
+    Width is $60.8~\mathrm{\mu m}$. Height is $56.81~\mathrm{\mu m}$.
+\end{solution*}
+\begin{example}
+    Create rings for nets \texttt{gnd} and \texttt{vdd} centering between the I/O pads and core boundaries. Set the top/bottom wires on \texttt{metal3} and the left/right wires on \texttt{metal4}. Set the wire spacing as $5~\mathrm{\mu m}$ and width as $5~\mathrm{\mu m}$. How many wires and vias are created?
+\end{example}
+\begin{solution*}
+    8 wires and 8 vias are created.
+\end{solution*}
+\begin{example}
+    Turn on auto via generation for the \texttt{NanoRoute} router.
+    Then place design. How many instances are placed?
+\end{example}
+\begin{solution*}
+    577 instances are placed.
+\end{solution*}
+\begin{example}
+    Set the maximum layer of pin assignment as 4 and assign I/O pins.
+    Route power structures. Which layers are the power structures routed?
+\end{example}
+\begin{solution*}
+    The power structures are routed in \texttt{metal1}.
+\end{solution*}
+\begin{example}
+    Insert filler cell instances of \texttt{FILL} in the gaps between standard cell instances. How many filler instances are added?
+\end{example}
+\begin{solution*}
+    2254 filler instances are added.
+\end{solution*}
+\begin{example}
+    Connect the tie high pins to global net \texttt{vdd}.
+    Connect the power and ground pins with name \texttt{vdd} to global net \texttt{vdd}
+    and override previous setting.
+    Connect the tie low pins to global net \texttt{gnd}.
+    Connect the power and ground pins with name \texttt{gnd} to global net \texttt{gnd}
+    and override previous setting.
+    Route the design with the \texttt{NanoRoute} router.
+    What is the total wire length?
+    How many single-cut vias are used?
+    How many multi-cut vias are used?
+\end{example}
+\begin{solution*}
+    The total wire length is $6674~\mathrm{\mu m}$.
+    425 single-cut vias and 1998 multi-cut vias are used.
+\end{solution*}
+\begin{example}
+    Extract resistance and capacitance for the interconnections using the post-route engine.
+    Generate a timing report.
+    What is the slack?
+\end{example}
+\begin{solution*}
+    The slack is $7.447$.
+\end{solution*}
+\begin{example}
+    Attach all scripts you used in file \texttt{multiplyadd.tcl}.
+\end{example}
+\begin{solution*}
+    \lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+    set top multiplyadd
+    set init_verilog ${top}.vh
+    set init_top_cell ${top}
+    set init_design_netlisttype Verilog
+    set init_lef_file gscl45nm.lef
+    set init_pwr_net vdd
+    set init_gnd_net gnd
+    set init_mmmc_file ${top}.view
+    init_design
+    
+    # Create Initial Floorplan
+    floorplan -r 1.0 0.6 20 20 20 20
+    
+    # Create Power structures
+    addRing -spacing 5 -width 5 -layer {top metal3 bottom metal3 left metal4 right metal4}\
+        -center 1 -nets { gnd vdd }
+    
+    specifyScanChain ${top}_sc -start a[0] -stop result[16]
+    setScanReorderMode -compLogic true
+    setNanoRouteMode -routeUseAutoVia true
+    setPinAssignMode -maxLayer 4
+    assignIoPins
+    # Place standard cells
+    place_opt_design
+    
+    # Route power nets
+    sroute
+    
+    # Add filler cells
+    addFiller -cell FILL -prefix FILL -fillBoundary
+    
+    # Connect all new cells to VDD/GND
+    globalNetConnect vdd -type tiehi
+    globalNetConnect vdd -type pgpin -pin vdd -override
+    globalNetConnect gnd -type tielo
+    globalNetConnect gnd -type pgpin -pin gnd -override
+    # Run global Routing
+    routeDesign
+    
+    # Get final timing results
+    setExtractRCMode -engine postRoute
+    extractRC
+    buildTimingGraph
+    setCteReport
+    report_timing
+    \end{lstlisting}
+\end{solution*}
+\section{Timing Optimization}
+Repeat~\Cref{sec:pd} for different row density 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9.
+\begin{example}
+    Show the relationship between row density and the wire length in each layer.
+\end{example}
+\begin{example}
+    Show the relationship between row density and the number of single/multi-cut vias.
+\end{example}
+\begin{example}
+    Show the relationship between row density and the slack.
+\end{example}
+
+\end{document}
