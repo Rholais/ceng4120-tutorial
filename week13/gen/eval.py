@@ -49,6 +49,7 @@ with open(args.input) as f:
             print(l)
 
 with open(args.output) as f:
+    pins[:, 3] = -1
     for line in f:
         l = line.split()
         if len(l) == 0:
@@ -65,6 +66,10 @@ with open(args.output) as f:
                 exit(0)
 
             pins[pin_idx, 3] = tap_idx
+
+    if pins[:, 3].min() < 0:
+        print('score    : pin {0} not assigned'.format(pins[:, 3].argmin()))
+        exit(0)
 
 d = 0
 g = 0
