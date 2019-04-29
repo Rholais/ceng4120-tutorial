@@ -1,0 +1,320 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage[linguistics]{forest}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 12}
+\subtitle{Innovus}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Design Implementation}
+\begin{itemize}
+    \item Cadence Innovus Implementation System: Gate level netlist to GDS.
+    \item \texttt{.lef} library exchange format: Layer, Via, Macro definitions.
+    \item \texttt{.v} Synthesized Verilog netlist.
+    \item \texttt{.view} Multi-mode multi-corner (MMMC) view definition: Provides the ability to configure the software to
+    support multiple combinations of modes (a set of clocks, supply voltages, timing constraints, and libraries) and corners (a set of libraries characterized for process, voltage, and temperature variations), and to evaluate them concurrently.
+    \item \texttt{.sdc} Synopsys Design Constraints: Timing, power, area.
+    \item \texttt{.tlf} Timing Library Format: Timing and power of the cell library.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{MMMC View Definition}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Version:1.0 MMMC View Definition File
+# Do Not Remove Above Line
+set pdk gscl45nm
+set top multiplyadd
+# Associates a TCL list of timing and cdB/UDN libraries
+# with a specified library set name
+create_library_set -name ${pdk}_ls -timing ${pdk}.tlf
+# Associates a list of SDC constraint files with a specified constraint mode name
+create_constraint_mode -name ${top}_cm -sdc_files ${top}.sdc
+# Creates a named delay calculation corner object that can be referenced later
+create_delay_corner -name ${pdk}_dc -library_set ${pdk}_ls
+# Creates an analysis view object
+create_analysis_view -name ${top}_av\
+    -constraint_mode ${top}_cm -delay_corner ${pdk}_dc
+# Defines the analysis views to use for setup and hold analysis and optimization
+set_analysis_view -setup ${top}_av -hold ${top}_av
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Synopsys Design Constraints}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+set sdc_version 1.4
+# Creates a clock object and defines its waveform in the current design
+create_clock -name vclk -period 10 -waveform {0 5}
+# Models the drive capability of an external driver connected to the input port
+set_driving_cell -lib_cell INVX1 -library gscl45nm -no_design_rule -max -pin Y\
+    -from_pin A [get_ports {c[5]}]
+set_driving_cell -lib_cell INVX1 -library gscl45nm -no_design_rule -min -pin Y\
+    -from_pin A [get_ports {c[5]}]
+# Defines the arrival time relative to a clock edge on input ports
+set_input_delay -add_delay 0 -clock [get_clocks {vclk}] [get_ports {c[2]}]
+# Specifies the data required time on output ports or hierarchical ports
+set_output_delay -add_delay 0 -clock [get_clocks {vclk}] [get_ports {result[9]}]
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Timing Library Format}
+\begin{columns}
+    \column{1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+CELL(AND2X1
+    TIMING_Model(ioDelayRiseModel0...)
+    ENERGY_Model(PowerRiseModel0...)
+    ...
+    Area(2.346500)
+    CELL_SPOWER(15.605900)
+    PIN(A
+        PINTYPE(INPUT)
+        Capacitance(0.002291)
+    )
+    PIN(B
+        PINTYPE(INPUT)
+        Capacitance(0.002343)
+    )
+    PIN(Y
+        PINTYPE(OUTPUT)
+        FUNCTION( (A & B))
+        Capacitance(0.000000)
+        Load_Limit(0.137429)
+    )
+    Path( A => Y 01 01 DELAY(ioDelayRiseModel0) SLEW(SlopeRiseModel0) )
+    Path( A => Y 10 10 DELAY(ioDelayFallModel0) SLEW(SlopeFallModel0) )
+    PATH( A => Y 01 01 INTERNAL_ENERGY(PowerRiseModel0) )
+    PATH( A => Y 10 10 INTERNAL_ENERGY(PowerFallModel0) )
+)
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Design Initialization}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Specifies the gate-level Verilog netlist files to be read
+set init_verilog ${top}.vh
+# Specifies the name of the top module
+set init_top_cell ${top}
+# Specifies  the  source  of the design netlist.
+# You can specify either Verilog or OA.
+set init_design_netlisttype Verilog
+# Specifies whether the top cell name is automatically assigned (0)
+# or is set by the user (1)
+set init_design_settop 1
+# Specifies  the I/O constraint file
+set init_io_file {}
+# Specifies the list of LEF files to be imported
+set init_lef_file gscl45nm.lef
+# Specifies the list of global power nets used in the design
+set init_pwr_net vdd
+# Specifies the list of global ground nets used in the design
+set init_gnd_net gnd
+# Specifies a Tcl command script that contains the analysis view configurations
+# for multi-mode multi-corner (MMMC) timing analysis and optimization
+set init_mmmc_file ${top}.view
+# Initializes a design using the Tcl globals
+init_design
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Floor-planning}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Specifies the floorplan dimensions
+# -r {aspectRatio [rowDensity [Left Bottom Right Top]]}
+# Specifies the chip's core dimensions
+# as the ratio of the height divided by the width.
+# If a value of 1.0 is used, a square chip is defined.
+# A value of 2.0 will define a rectangular chip
+# with height dimension that is twice the width dimension.
+# * aspectRatio: Specifies the aspect ratio value.
+# * rowDensity: Specifies a row density value.
+# rowDensity = (std area + block/macro area) / core area
+# * Left: Specifies the margin from the outside edge of the core box to the left.
+# * Bottom: Specifies the margin from the outside edge of the core box to the bottom.
+# * Right: Specifies the margin from the outside edge of the core box to the right.
+# * Top: Specifies the margin from the outside edge of the core box to the top.
+floorPlan -r {1.0 0.8 20 20 20 20}
+# -s {W H Left Bottom Right Top}
+# Specifies the core size and the spacing, in micrometers, between the core edge,
+# which is the margin between the outside edge of the core (head) box.
+# * W: Specifies the core box's width value.
+# * H: Specifies the core box's height value.
+floorPlan -s {50 50 20 20 20 20}
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Net Ring}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Creates rings for specified nets
+# around the core boundary or selected blocks and groups of core rows.
+# Use this command after creating an initial floorplan.
+# -center {0 | 1}
+# Specifies whether to center the core rings
+# between the I/O pads and core boundaries.
+# If you do not specify this parameter with a value of 1,
+# you must specify the offset parameter.
+# -layer {layer |
+#         {top top_layer bottom bottom_layer left left_layer right right_layer}}
+# -nets list_of_nets
+# Specifies the names of the nets for which power rings are to be created.
+# You must enclose the list of net names within curly braces.
+# -offset {value |
+#          {top top_offset bottom bottom_offset
+#           left left_offset right right_offset}}
+addRing -center 1 -spacing 5 -width 5\
+    -layer {top metal5 bottom metal5 left metal6 right metal6} -nets { gnd vdd }
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Placement}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Specifies a scan chain or group in a design
+specifyScanChain ${top}_sc -start a[0] -stop result[16]
+# Enables -scanTrace trace through multiple input logic gates in the scan path.
+setScanReorderMode -compLogic true
+# Allows the use of internal generated vias
+setNanoRouteMode -routeUseAutoVia true
+# Assigns the top I/O pin locations for a block-level design
+assignIoPins
+# Executes pre-CTS flow with both placement and pre-CTS optimization
+place_opt_design
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Routing}
+\begin{columns}
+    \column{1.1\linewidth}
+    \onslide<1->\lstset{language=tcl,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+# Routes power structures
+sroute
+# Inserts filler cell instances in the gaps between standard cell instances
+addFiller -cell FILL -prefix FILL -fillBoundary
+# Connects PG pins or 1'b0/1'b1 pins to the specified global net,
+# which is either a power or ground net
+globalNetConnect vdd -type tiehi
+globalNetConnect vdd -type pgpin -pin vdd -override
+globalNetConnect gnd -type tielo
+globalNetConnect gnd -type pgpin -pin gnd -override
+# Runs routing or postroute via or wire optimization using the NanoRoute router
+routeDesign
+# Uses postRoute engine.
+# RC extraction is done
+# by the detailed measurement of the distance to the surrounding wires;
+# coupling is reported.
+# The -effortLevel parameter further specifies which postRoute engine is used
+# for balancing performance versus accuracy needs.
+setExtractRCMode -engine postRoute
+# Extracts resistance and capacitance for the interconnects
+# and stores the results in an RC database
+extractRC
+buildTimingGraph
+    \end{lstlisting}
+\end{columns}
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
