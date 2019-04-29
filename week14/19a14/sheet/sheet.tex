@@ -1,0 +1,121 @@
+\documentclass[acmlarge,screen=true,anonymous=false,11pt]{acmart}
+
+% ======================================================== 
+%          Copyright & Conference setting
+% ======================================================== 
+% copyright
+\setcopyright{none}
+\settopmatter{printacmref=false, printccs=false, printfolios=true}
+
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
+
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+
+\usepackage{cleveref}
+\crefname{mytheorem}{Theorem}{Theorems}
+
+\usepackage{listings}
+
+\usepackage{pgfplots}
+\usepackage{textgreek}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{patterns}
+
+\usepackage{version}
+% \excludeversion{proof}
+\newtheorem*{solution*}{Solution}
+% \excludeversion{solution*}
+
+% ==== defined colors
+\definecolor{myorange}{RGB}{244,106,18} %F47012
+\definecolor{myblue}{RGB}{0,111,190}    %006FBE
+\definecolor{mygreen}{RGB}{0,127,128}   %007F80
+\definecolor{myred}{RGB}{228,46,36}     %E42E24
+\definecolor{myyellow}{RGB}{198,148,34} %C69422
+\definecolor{mydark}{RGB}{114,44,114}   %722C72
+\definecolor{mymiddle}{RGB}{144,44,144} %902C90
+\definecolor{mylight}{RGB}{167,44,167}  %A72CA7
+
+\definecolor{light-cayenne}{RGB}{177,0,28} %B1001C
+\definecolor{light-mocha}{RGB}{179,68,0}   %B34400
+\definecolor{ocean}{RGB}{0,55,118}         %003776
+
+\iffalse
+\newtoggle{screen}
+\toggletrue{screen}
+\AtEndPreamble{%
+\iftoggle{screen}
+{
+    \hypersetup{colorlinks, % 01/2018 Bei: change link colors all to blue
+        linkcolor=blue,
+        citecolor=blue,
+        urlcolor=blue,
+        filecolor=blue}
+}
+{
+    \hypersetup{hidelinks}
+}}
+\fi
+
+\begin{document}
+\title{CENG 4120 Project Presentation Comments}
+\subtitle{Computer-Aided Design for Very Large Scale Integrated Circuits}
+\author{Name: \qquad \qquad \qquad \qquad \qquad}
+\author{SID: }
+
+\maketitle
+
+\begin{table}[H]
+    \begin{tabular}{c|c|p{15cm}}
+        \toprule
+ Name	& Grade	& Comments\\\midrule
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\
+    & 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\midrule
+ 	& 	& \\
+    & 	& \\
+    & 	& \\
+ 	& 	& \\
+ 	& 	& \\
+ 	& 	& \\\bottomrule
+    \end{tabular}
+\end{table}
+
+\end{document}

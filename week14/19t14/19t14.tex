@@ -1,0 +1,370 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage[linguistics]{forest}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Project}
+\subtitle{Result}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Benchmark Characteristics}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Benchmark Characteristics}
+    \begin{tabular}{c|ccccccc}
+        \toprule
+        Design	& \# Tap	& \# Group	& \# Pin	& Die Size	& Max dist	& Max clone	& Max load\\\midrule
+        1	& 4	& 10	& 4000	& 0.20	& 0.30	& 0.22	& 2200\\
+        2	& 8	& 24	& 5000	& 0.40	& 0.36	& 0.41	& 1400\\
+        3	& 12	& 32	& 6000	& 0.50	& 0.41	& 0.37	& 1900\\
+        4	& 20	& 40	& 7000	& 0.60	& 0.42	& 0.34	& 1200\\
+        5	& 20	& 41	& 7000	& 0.80	& 0.53	& 0.20	& 2200\\
+        6	& 28	& 126	& 9000	& 0.90	& 0.50	& 0.40	& 1600\\
+        7	& 20	& 42	& 7000	& 1.00	& 0.64	& 0.20	& 800\\
+        8	& 22	& 63	& 7400	& 1.10	& 0.66	& 0.20	& 800\\
+        9	& 24	& 84	& 7800	& 1.20	& 0.67	& 0.20	& 600\\
+        10	& 26	& 105	& 8200	& 1.30	& 0.75	& 0.20	& 800\\
+        11	& 28	& 126	& 8600	& 1.40	& 0.85	& 0.20	& 1400\\
+        12	& 29	& 147	& 9000	& 1.50	& 1.90	& 0.20	& 700\\
+        13	& 30	& 168	& 9400	& 1.60	& 1.00	& 0.20	& 700\\
+        14	& 31	& 189	& 9700	& 1.70	& 1.10	& 0.20	& 700\\
+        15	& 32	& 210	& 10000	& 1.80	& 1.20	& 0.20	& 700\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Overview}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Solution Correctness}
+    \begin{tabular}{c|cccccccc}
+        \toprule
+        Design	& A	& B	& C	& D	& E	& F	& G	& H\\\midrule
+        1	& 	& 	& 	& 	& 	& 	& 	& \\
+        2	& 	& 	& 	& DIST	& 	& 	& 	& \\
+        3	& LOAD	& 	& 	& DIST	& 	& LOAD	& 	& \\
+        4	& LOAD	& 	& 	& DIST	& 	& LOAD	& 	& \\
+        5	& 	& 	& 	& DIST	& 	& 	& 	& CRASH\\
+        6	& LOAD	& 	& 	& DIST	& 	& 	& 	& \\
+        7	& LOAD	& 	& DIST	& DIST	& 	& LOAD	& 	& \\
+        8	& LOAD	& 	& DIST	& DIST	& 	& LOAD	& 	& \\
+        9	& LOAD	& 	& DIST	& DIST	& 	& LOAD	& 	& \\
+        10	& 	& 	& MISS	& DIST	& 	& 	& 	& \\
+        11	& 	& 	& TIME	& DIST	& 	& 	& 	& \\
+        12	& LOAD	& 	& LOAD	& 	& 	& LOAD	& 	& \\
+        13	& LOAD	& 	& DIST	& DIST	& 	& LOAD	& 	& \\
+        14	& LOAD	& 	& MISS	& DIST	& 	& LOAD	& 	& \\
+        15	& LOAD	& 	& DIST	& DIST	& 	& LOAD	& 	& \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Overview}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Normalized Score}
+    \begin{tabular}{c|cccccccc}
+        \toprule
+        Design	& A	& B	& C	& D	& E	& F	& G	& H\\\midrule
+        1	& 7.12	& \textbf{1.00}	& \textbf{1.00}	& 2.33	& \textbf{1.00}	& 14.54	& 3.80	& 1.37\\
+        2	& 1.10	& 1.02	& \textbf{1.00}	& 	& 1.05	& 1.14	& 2.13	& 1.08\\
+        3	& 	& 1.02	& \textbf{1.00}	& 	& 1.10	& 	& 2.56	& 1.32\\
+        4	& 	& 1.02	& \textbf{1.00}	& 	& 1.04	& 	& 2.41	& 1.11\\
+        5	& 86.67	& \textbf{1.00}	& 1.01	& 	& 1.23	& 100.50	& 54.67	& \\
+        6	& 	& \textbf{1.00}	& \textbf{1.00}	& 	& 1.03	& 1.22	& 2.82	& 1.16\\
+        7	& 	& \textbf{1.00}	& 	& 	& 1.18	& 	& 43.77	& 1.12\\
+        8	& 	& \textbf{1.00}	& 	& 	& 1.15	& 	& 31.48	& 1.30\\
+        9	& 	& \textbf{1.00}	& 	& 	& 1.13	& 	& 37.21	& 1.39\\
+        10	& 32.92	& \textbf{1.00}	& 	& 	& 1.21	& 35.81	& 33.33	& 1.53\\
+        11	& 54.71	& \textbf{1.00}	& 	& 	& 1.17	& 56.66	& 41.57	& 1.97\\
+        12	& 	& \textbf{1.00}	& 	& 48.25	& 1.27	& 	& 33.51	& 1.49\\
+        13	& 	& \textbf{1.00}	& 	& 	& 1.14	& 	& 40.72	& 1.37\\
+        14	& 	& \textbf{1.00}	& 	& 	& 1.15	& 	& 35.96	& 1.44\\
+        15	& 	& \textbf{1.00}	& 	& 	& 1.14	& 	& 45.40	& 1.30\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Overview}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Ranking}
+    \begin{tabular}{c|cccccccc}
+        \toprule
+        Design	& A	& B	& C	& D	& E	& F	& G	& H\\\midrule
+        1	& 7	& 1	& 1	& 5	& 1	& 8	& 6	& 4\\
+        2	& 5	& 2	& 1	& 8	& 3	& 6	& 7	& 4\\
+        3	& 8	& 2	& 1	& 8	& 3	& 8	& 5	& 4\\
+        4	& 8	& 2	& 1	& 8	& 3	& 8	& 5	& 4\\
+        5	& 5	& 1	& 2	& 8	& 3	& 6	& 4	& 8\\
+        6	& 8	& 1	& 1	& 8	& 3	& 5	& 6	& 4\\
+        7	& 8	& 1	& 8	& 8	& 3	& 8	& 4	& 2\\
+        8	& 8	& 1	& 8	& 8	& 2	& 8	& 4	& 3\\
+        9	& 8	& 1	& 8	& 8	& 2	& 8	& 4	& 3\\
+        10	& 4	& 1	& 8	& 8	& 2	& 6	& 5	& 3\\
+        11	& 5	& 1	& 8	& 8	& 2	& 6	& 4	& 3\\
+        12	& 8	& 1	& 8	& 5	& 2	& 8	& 4	& 3\\
+        13	& 8	& 1	& 8	& 8	& 2	& 8	& 4	& 3\\
+        14	& 8	& 1	& 8	& 8	& 2	& 8	& 4	& 3\\
+        15	& 8	& 1	& 8	& 8	& 2	& 8	& 4	& 3\\\midrule
+        Avg. & 7.07	& 1.20	& 5.27	& 7.60	& 2.33	& 7.27	& 4.67	& 3.60\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ranking}
+\Huge
+Fifth Place
+\newline
+\newline
+ZHANG Xiaopeng
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ranking}
+\Huge
+Fourth Place
+\newline
+\newline
+JIANG Bentian
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ranking}
+\Huge
+Third Place
+\newline
+\newline
+DENG Zihao
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ranking}
+\Huge
+Second Place
+\newline
+\newline
+ZHENG Dan
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ranking}
+\Huge
+First Place
+\newline
+\newline
+LIU Jinwei
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Study}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Runtime}
+    \begin{tabular}{c|ccccc}
+        \toprule
+        Design	& Liu	& Zheng	& Deng	& Jiang	& Zhang\\\midrule
+        1	& 0:10.98	& 0:00.04	& 0:02.35	& 0:00.12	& 0:02.60\\
+        2	& 0:16.34	& 0:00.04	& 0:07.65	& 0:00.06	& 0:00.93\\
+        3	& 0:17.99	& 0:00.08	& 0:19.47	& 0:00.09	& 0:01.56\\
+        4	& 0:50.03	& 0:00.07	& 1:09.44	& 0:00.12	& 48:34.49\\
+        5	& 2:31.63	& 0:00.08	& 	& 0:00.09	& 2:28.07\\
+        6	& 0:40.95	& 0:00.09	& 3:57.91	& 0:00.17	& 0:06.97\\
+        7	& 3:35.67	& 0:00.12	& 1:30.18	& 0:00.10	& 5:41.58\\
+        8	& 3:55.01	& 0:00.08	& 1:50.31	& 0:00.12	& 22:45.57\\
+        9	& 6:42.46	& 0:00.08	& 2:04.39	& 0:00.13	& 0:00.13\\
+        10	& 7:06.33	& 0:00.12	& 2:56.85	& 0:00.16	& 0:13.56\\
+        11	& 6:29.89	& 0:00.10	& 3:29.45	& 0:00.17	& \\
+        12	& 14:07.60	& 0:00.14	& 4:03.87	& 0:00.19	& 0:27.06\\
+        13	& 18:32.60	& 0:00.10	& 5:55.44	& 0:00.21	& 0:13.91\\
+        14	& 22:32.39	& 0:00.10	& 7:06.89	& 0:00.73	& 0:10.31\\
+        15	& 21:54.15	& 0:00.12	& 7:45.47	& 0:00.92	& 0:17.90\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Study}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Max Distance}
+    \begin{tabular}{c|ccccc}
+        \toprule
+        Design	& Liu	& Zheng	& Deng	& Jiang	& Zhang\\\midrule
+        1	& 183590	& 183590	& 178036	& 260574	& 183590\\
+        2	& 218158	& 218158	& 210752	& 335342	& 218158\\
+        3	& 335630	& 380518	& 347605	& 387003	& 366984\\
+        4	& 339514	& 339514	& 294900	& 407110	& 294900\\
+        5	& 528915	& 528915	& 	& 529950	& 528915\\
+        6	& 462119	& 462119	& 462119	& 499923	& 462119\\
+        7	& 633832	& 627619	& 613454	& 639994	& 1000897\\
+        8	& 652592	& 655468	& 631514	& 659942	& 1215090\\
+        9	& 629875	& 640915	& 665850	& 669984	& 1551929\\
+        10	& 737170	& 694293	& 749058	& 749942	& \\
+        11	& 847138	& 842651	& 842651	& 849895	& \\
+        12	& 1161733	& 1355878	& 1247643	& 1899313	& 1811924\\
+        13	& 994463	& 945867	& 946329	& 999988	& 2377389\\
+        14	& 1077036	& 1085110	& 1088021	& 1099992	& \\
+        15	& 1196597	& 1190758	& 1191671	& 1199990	& 2328445\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Study}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Clone Ratio}
+    \begin{tabular}{c|ccccc}
+        \toprule
+        Design	& Liu	& Zheng	& Deng	& Jiang	& Zhang\\\midrule
+        1	& 0.00	& 0.00	& 0.10	& 0.60	& 0.00\\
+        2	& 0.00	& 0.00	& 0.00	& 0.13	& 0.00\\
+        3	& 0.00	& 0.00	& 0.03	& 0.00	& 0.00\\
+        4	& 0.05	& 0.00	& 0.02	& 0.23	& 0.02\\
+        5	& 0.20	& 0.05	& 	& 2.88	& 0.20\\
+        6	& 0.00	& 0.00	& 0.01	& 0.40	& 0.00\\
+        7	& 0.14	& 0.14	& 0.14	& 3.74	& 0.19\\
+        8	& 0.19	& 0.02	& 0.14	& 2.71	& 0.19\\
+        9	& 0.18	& 0.01	& 0.12	& 2.96	& 0.19\\
+        10	& 0.15	& 0.00	& 0.08	& 2.27	& \\
+        11	& 0.19	& 0.00	& 0.00	& 2.14	& \\
+        12	& 0.18	& 0.01	& 0.07	& 2.82	& 0.16\\
+        13	& 0.13	& 0.00	& 0.03	& 3.11	& 0.19\\
+        14	& 0.19	& 0.01	& 0.11	& 2.98	& \\
+        15	& 0.11	& 0.00	& 0.08	& 3.44	& 0.19\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Study}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{Max Load}
+    \begin{tabular}{c|ccccc}
+        \toprule
+        Design	& Liu	& Zheng	& Deng	& Jiang	& Zhang\\\midrule
+        1	& 2004	& 2004	& 2200	& 2200	& 2004\\
+        2	& 1034	& 1079	& 1230	& 1400	& 1280\\
+        3	& 1869	& 1731	& 1900	& 1139	& 1890\\
+        4	& 1167	& 1064	& 1200	& 1200	& 1190\\
+        5	& 2190	& 2023	& 	& 1900	& 2196\\
+        6	& 1425	& 1589	& 1600	& 1600	& 1425\\
+        7	& 797	& 800	& 800	& 800	& 2432\\
+        8	& 797	& 800	& 800	& 800	& 2097\\
+        9	& 600	& 600	& 600	& 600	& 2652\\
+        10	& 794	& 799	& 800	& 800	& \\
+        11	& 1390	& 1387	& 1192	& 1224	& \\
+        12	& 700	& 700	& 700	& 700	& 2799\\
+        13	& 697	& 692	& 700	& 700	& 3602\\
+        14	& 700	& 700	& 700	& 700	& \\
+        15	& 700	& 699	& 700	& 700	& 3794\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result Study}
+\scriptsize
+\begin{table}[tb!]
+    % \renewcommand{\arraystretch}{.9}
+    \caption{HPWL}
+    \begin{tabular}{c|ccccc}
+        \toprule
+        Design	& Liu	& Zheng	& Deng	& Jiang	& Zhang\\\midrule
+        1	& 405759	& 405759	& 555763	& 531992	& 405759\\
+        2	& 1084814	& 1126186	& 1150473	& 2278525	& 1068253\\
+        3	& 1324706	& 1427668	& 1725227	& 3339162	& 1302570\\
+        4	& 2032803	& 2074805	& 2211537	& 4807555	& 1995283\\
+        5	& 5113500	& 6299404	& 	& 19426457	& 5167948\\
+        6	& 2593115	& 2681217	& 2999113	& 7321453	& 2593115\\
+        7	& 8050047	& 9488504	& 8980556	& 18850665	& 5720475\\
+        8	& 9634378	& 11120378	& 12558854	& 22349583	& 7962159\\
+        9	& 14052876	& 15838219	& 19567390	& 35283635	& 6522656\\
+        10	& 13382220	& 16157663	& 20457662	& 39352336	& \\
+        11	& 10125264	& 11868319	& 19950309	& 39287867	& \\
+        12	& 18685127	& 23758517	& 27904401	& 44357072	& 9699276\\
+        13	& 21940527	& 24975588	& 30029100	& 57403785	& 10386510\\
+        14	& 25998173	& 29980181	& 37326116	& 62761266	& \\
+        15	& 27439281	& 31326435	& 35742195	& 72465147	& 12217009\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\plain{Thank You!}
+
+\end{document}
