@@ -985,80 +985,78 @@ SITE CoreSite
   CLASS CORE ;
   SIZE 0.1 BY 1.2 ;
 END CoreSite
-'''
 
-END = '''
-    PIN VDD
-        DIRECTION INOUT ;
-        SHAPE ABUTMENT ;
-        USE POWER ;
-        PORT
-        LAYER Metal1 ;
-        RECT 0.000000 1.120000 6.400000 1.280000 ;
-        END
-    END VDD
-    PIN VSS
-        DIRECTION INOUT ;
-        SHAPE ABUTMENT ;
-        USE GROUND ;
-        PORT
-        LAYER Metal1 ;
-        RECT 0.000000 -0.080000 6.400000 0.080000 ;
-        END
-    END VSS
 '''
 
 with open('mlp.lef', 'w') as f:
     f.write(BEGIN)
     for i in range(0, 2):
-        if i:
-            name = 'NEUROS'
-        else:
-            name = 'NEURON'
+        for j in range(0, 4):
+            if i:
+                name = 'NEUROS{0}'.format(j)
+            else:
+                name = 'NEURON{0}'.format(j)
 
-        f.write('MACRO {0}\n'.format(name))
-        f.write('    CLASS CORE ;\n')
-        f.write('    FOREIGN {0} 0.000000 0.000000 ;\n'.format(name))
-        f.write('    ORIGIN 0.000000 0.000000 ;\n')
-        f.write('    SIZE 6.400000 BY 1.200000 ;\n')
-        f.write('    SYMMETRY X Y ;\n')
-        f.write('    SITE CoreSite ;\n')
-        for j in range(0, 5):
-            for k in range(0, 8):
-                f.write('    PIN A{0}{1}\n'.format(j, k))
-                f.write('        DIRECTION INPUT ;\n')
-                f.write('        USE SIGNAL ;\n')
-                f.write('        PORT\n')
-                f.write('        LAYER Metal1 ;\n')
-                x = k * 0.5 + 0.25
-                if i:
-                    y = -j * 0.2 + 1.0
-                else:
-                    y = +j * 0.2 + 0.2
+            f.write('MACRO {0}\n'.format(name))
+            f.write('    CLASS CORE ;\n')
+            f.write('    FOREIGN {0} 0.000000 0.000000 ;\n'.format(name))
+            f.write('    ORIGIN 0.000000 0.000000 ;\n')
+            f.write('    SIZE {0:.1f} BY 1.200000 ;\n'.format(-j * 0.1 + 6.4))
+            f.write('    SYMMETRY X Y ;\n')
+            f.write('    SITE CoreSite ;\n')
+            for k in range(0, 5):
+                for l in range(0, 8):
+                    f.write('    PIN A{0}{1}\n'.format(k, l))
+                    f.write('        DIRECTION INPUT ;\n')
+                    f.write('        USE SIGNAL ;\n')
+                    f.write('        PORT\n')
+                    f.write('        LAYER Metal1 ;\n')
+                    x = l * 0.6 + 0.3
+                    if i:
+                        y = -k * 0.2 + 1.0
+                    else:
+                        y = +k * 0.2 + 0.2
 
-                f.write('        RECT {0:.3f} {1:.3f} {2:.3f} {3:.3f} ;\n'.format(x - 0.025, y - 0.055, x + 0.025, y + 0.055))
-                f.write('        END\n')
-                f.write('    END A{0}{1}\n'.format(j, k))
+                    f.write('        RECT {0:.3f} {1:.3f} {2:.3f} {3:.3f} ;\n'.format(x - 0.025, y - 0.055, x + 0.025, y + 0.055))
+                    f.write('        END\n')
+                    f.write('    END A{0}{1}\n'.format(k, l))
 
-        for j in range(0, 2):
             for k in range(0, 4):
-                f.write('    PIN Y{0}\n'.format(j * 4 + k))
-                f.write('        DIRECTION OUTPUT ;\n')
-                f.write('        USE SIGNAL ;\n')
-                f.write('        PORT\n')
-                f.write('        LAYER Metal1 ;\n')
-                x = k * 0.5 + 4.65
-                if i:
-                    y = -j * 0.4 + 0.8
-                else:
-                    y = +j * 0.4 + 0.4
+                for l in range(0, 2):
+                    f.write('    PIN Y{0}\n'.format(k * 2 + l))
+                    f.write('        DIRECTION OUTPUT ;\n')
+                    f.write('        USE SIGNAL ;\n')
+                    f.write('        PORT\n')
+                    f.write('        LAYER Metal1 ;\n')
+                    x = -j * 0.1 + l * 0.6 + 5.5
+                    if i:
+                        y = -k * 0.2 + 0.9
+                    else:
+                        y = +k * 0.2 + 0.3
 
-                f.write('        RECT {0:.3f} {1:.3f} {2:.3f} {3:.3f} ;\n'.format(x - 0.025, y - 0.055, x + 0.025, y + 0.055))
-                f.write('        END\n')
-                f.write('    END Y{0}\n'.format(j * 4 + k))
+                    f.write('        RECT {0:.3f} {1:.3f} {2:.3f} {3:.3f} ;\n'.format(x - 0.025, y - 0.055, x + 0.025, y + 0.055))
+                    f.write('        END\n')
+                    f.write('    END Y{0}\n'.format(k * 2 + l))
 
-        f.write(END)
-        f.write('END {0}\n\n'.format(name))
+            f.write('    PIN VDD\n')
+            f.write('        DIRECTION INOUT ;\n')
+            f.write('        SHAPE ABUTMENT ;\n')
+            f.write('        USE POWER ;\n')
+            f.write('        PORT\n')
+            f.write('        LAYER Metal1 ;\n')
+            f.write('        RECT 0.000000 1.120000 {0:.1f} 1.280000 ;\n'.format(-j * 0.1 + 6.4))
+            f.write('        END\n')
+            f.write('    END VDD\n')
+            f.write('    PIN VSS\n')
+            f.write('        DIRECTION INOUT ;\n')
+            f.write('        SHAPE ABUTMENT ;\n')
+            f.write('        USE GROUND ;\n')
+            f.write('        PORT\n')
+            f.write('        LAYER Metal1 ;\n')
+            f.write('        RECT 0.000000 -0.080000 {0:.1f} 0.080000 ;\n'.format(-j * 0.1 + 6.4))
+            f.write('        END\n')
+            f.write('    END VSS\n')
+            f.write('END {0}\n\n'.format(name))
 
     f.write('END LIBRARY\n\n')
 
