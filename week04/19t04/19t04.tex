@@ -1,0 +1,362 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 04}
+\subtitle{Verilog Hardware Description Language}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Hardware Description Language}
+\begin{itemize}
+    \item Text of expressions, statements and control structures
+    \item Structure and behavior of electronic circuits
+    \item High level without being tied to a specific electronic technology
+    \item Use \begin{itemize}
+        \item Model a piece of hardware before it is created physically
+        \item Validate the specification against the HDL implementation
+        \item Produce an equivalent netlist of generic hardware primitives
+    \end{itemize}
+    \item VHDL and Verilog
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Verilog HDL}
+\begin{itemize}
+    \item Gateway Design Automation developed Verilog-XL in 1984
+    \item Acquired and put into public domain by Cadence Design Systems
+    \item IEEE Standard 1364-[1995, 2001, 2005], 1800-[2009, 2017]
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{A Simple Design}
+\begin{columns}
+    \column{.6\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+//  Verilog code for a full adder
+module FAX1 (YC, B, C, A, YS);
+    input  B ;
+    input  C ;
+    input  A ;
+    output YC ;
+    output YS ;
+
+    assign YC = (A & B) | (A & C) | (B & C);
+    assign YS = A ^ B ^ C;
+
+endmodule
+\end{lstlisting}
+
+\column{.5\linewidth}
+Comments describe or document models
+\lstset{language=Verilog,
+    basicstyle=\ttfamily\scriptsize
+}
+\begin{lstlisting}
+// a single line with comments
+/* multiple lines
+containing comments */
+\end{lstlisting}
+
+A module defines interface and behavior
+\lstset{language=Verilog,
+    basicstyle=\ttfamily\scriptsize
+}
+\begin{lstlisting}
+module identifier (port_list) ;
+    ports_declaration;
+    module_body;
+endmodule
+\end{lstlisting}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Port Declaration}
+\begin{columns}
+    \column{.7\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+    /*
+    input  B ;
+    input  C ;
+    input  A ;
+    output YC ;
+    output YS ;
+    */
+
+    assign YC = (A & B) | (A & C) | (B & C);
+    assign YS = A ^ B ^ C;
+
+endmodule
+\end{lstlisting}
+    
+    \column{.4\linewidth}
+    A port defines name and direction.
+    
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+input [3 : 0] a, b ;
+output [3 : 0] c;
+\end{lstlisting}
+    
+    
+    Ports can be defined in port list.
+    
+    Continuous assignments model combinational logic.
+\end{columns}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Wire Declaration}
+\begin{columns}
+    \column{.7\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+
+    wire AB, AC, BC;
+    
+    assign AB = A & B;
+    assign AC = A & C;
+    assign BC = B & C;
+
+    assign YC = AB | AC | BC;
+    assign YS = A ^ B ^ C;
+
+endmodule
+\end{lstlisting}
+    
+    \column{.4\linewidth}
+    A wire defines an internal signal.
+    
+    These statements are independent and executed concurrently.
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Wire Assignment}
+\begin{columns}
+\column{.7\linewidth}
+\lstset{language=Verilog,
+    basicstyle=\ttfamily\scriptsize
+}
+\begin{lstlisting}
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+
+    wire AB = A & B;
+    wire AC = A & C;
+    wire BC = B & C;
+    
+    assign YC = AB | AC | BC;
+    assign YS = A ^ B ^ C;
+
+endmodule
+\end{lstlisting}
+
+\column{.4\linewidth}
+A wire can be declared and continuously assigned in a single statement.
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Module Instantiation}
+\begin{columns}
+    \column{.7\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+//  Verilog code for an and gate
+module ANDX1 (output Y, input A, B);
+    assign Y = A & B;
+end module
+
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+    wire AB = A & B;
+    ANDX1 A1 (AC, A, C);
+    ANDX1 A2 (.Y(BC), .A(B), .B(C));
+    
+    assign YC = AB | AC | BC;
+    assign YS = A ^ B ^ C;
+endmodule
+\end{lstlisting}
+    
+    \column{.4\linewidth}
+    Connections by order must match the order appearing in the instantiated module.
+    
+    Connections by name can be specified in a set of parenthesis following the name of ports.
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+ANDX1 A2(.Y(BC), .A(B), .B(C));
+ANDX1 A3(.A(B), .B(C), .Y(BC));
+\end{lstlisting}
+
+Output pins can be left unconnected.
+\begin{lstlisting}
+ANDX1 A4(, B, C);
+\end{lstlisting}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Vectors}
+\begin{columns}
+    \column{.7\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+    \begin{lstlisting}
+//  Verilog code for an and gate
+module ANDX1 (output Y, input A, B);
+    assign Y = A & B;
+end module
+
+//  Verilog code for an and gate array
+module ANDX3 (output [2:0] Y, input [2:0] A, B);
+    ANDX1 A1 [2:0] (Y, A, B);
+end module
+
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+    ANDX3 A1 ({AB, AC, BC}, {A, A, B}, {B, C, C});
+
+    assign YC = AB | AC | BC;
+    assign YS = A ^ B ^ C;
+endmodule
+    \end{lstlisting}
+    
+    \column{.4\linewidth}
+    Module instantiations can create an array of instances.
+    
+    The concatenation is the combination of two or more expressions.
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+wire [7:0] a;
+{a, 4'b1110, b[2:1]}
+\end{lstlisting}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Repetition Multiplier}
+\begin{columns}
+    \column{.7\linewidth}
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+//  Verilog code for an and gate
+module ANDX1 (output Y, input A, B);
+    assign Y = A & B;
+end module
+
+//  Verilog code for an and gate array
+module ANDX3 (output [2:0] Y, input [2:0] A, B);
+    ANDX1 A1 [2:0] (Y, A, B);
+end module
+
+//  Verilog code for a full adder
+module FAX1 (output YC, input B, C, A, output YS);
+    ANDX3 A1 ({AB, AC, BC}, {{2{A}}, B}, {B, {2{C}}});
+    
+    assign YC = AB | AC | BC;
+    assign YS = A ^ B ^ C;
+endmodule
+\end{lstlisting}
+    
+    \column{.4\linewidth}
+    Concatenations can also be expressed using a repetition multiplier.
+    \lstset{language=Verilog,
+        basicstyle=\ttfamily\scriptsize
+    }
+\begin{lstlisting}
+{a, {2{b, c, d}}, a}
+{a, b, c, d, b, c, d, a}
+\end{lstlisting}
+
+\end{columns}
+
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
