@@ -1,0 +1,213 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 06}
+\subtitle{Unate Recursive Paradigm}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Tautology}
+\begin{eg}
+    Consider the function $f = ab + ac + a'$. We question if it is
+    a tautology.
+\end{eg}
+\onslide<2>\begin{solution*}
+    The cover is $\begin{matrix}
+    01 & 01 & 11\\
+    01 & 11 & 01\\
+    10 & 11 & 11
+    \end{matrix}$.  Assume that
+    the first variable is chosen for splitting. We take then the cofactor again w.r.t. $10~11~11$
+    and w.r.t. $01~11~11$. The first cofactor has $11~11~11$ in the first row and yields a tautology.
+    The second cofactor is $\begin{matrix}
+    11 & 01 & 11\\
+    11 & 11 & 01
+    \end{matrix}$. The cover is unate and there is not a row of $1$s. Hence it is not a tautology and
+    $f$ is not a tautology. 
+\end{solution*}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Containment}
+\begin{columns}
+    \column{.7\linewidth}
+    \begin{theorem}
+        \begin{equation}
+            f \supseteq \alpha \Leftrightarrow f_\alpha = 1
+        \end{equation}
+    \end{theorem}
+    \onslide<2->\begin{proof}
+        \begin{equation}
+            f \supseteq \alpha \Leftrightarrow f\alpha = \alpha.
+        \end{equation}
+        \begin{description}
+            \item[$\Rightarrow$] $f_\alpha = f_\alpha \cdot 1 = f_\alpha \alpha_\alpha = (f\alpha)_\alpha = \alpha_\alpha = 1$
+            \item[$\Leftarrow$] $f\alpha = (\alpha f_\alpha + \alpha'f_\alpha')\alpha = f_\alpha \alpha = \alpha$
+        \end{description}
+    \end{proof}
+
+\column{.4\linewidth}
+\begin{eg}
+    Consider the function $f = ab + ac + a'$. Test whether $f \supseteq bc$.
+\end{eg}
+\onslide<3>\begin{solution*}
+    By taking the cofactor, we obtain $\begin{matrix}
+    01 & 11 & 11\\
+    01 & 11 & 11\\
+    10 & 11 & 11
+    \end{matrix}$, which is a tautology. Hence $f \supseteq bc$.
+\end{solution*}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Complementation}
+\begin{columns}
+    \column{.4\linewidth}
+    \begin{theorem}
+        \begin{equation}
+            f' = xf'_x + x'f'_{x'}.
+        \end{equation}
+    \end{theorem}
+    \onslide<2->\begin{proof}
+        \begin{align}
+            \begin{aligned}
+            f' = & (xf_x + x'f_{x'})'\\
+            = & (x' + f'_x) (x + f'_{x'})\\
+            = & xx' + xf'_x + x'f'_{x'} + f'_x f'_{x'}\\
+            = & xf'_x + x'f'_{x'} + (x + x') f'_x f'_{x'}\\
+            = & xf'_x + xf'_x f'_{x'} + x'f'_{x'} + x'f'_x f'_{x'}\\
+            = & xf'_x (1 + f'_{x'}) + x'f'_{x'} (1 + f'_x)\\
+            = & xf'_x + x'f'_{x'}.
+            \end{aligned}
+        \end{align}
+    \end{proof}
+    
+    \column{.7\linewidth}
+    \begin{eg}
+        What are the termination rules?
+    \end{eg}
+    \onslide<3>\begin{solution*}
+        \begin{itemize}
+            \item $f = 0$. Its complement is the universal cube.
+            \item $f = 1$. Its complement is void.
+            \item The cover $F$ consists of one implicant. Its complement is computed by
+            De Morgan's law.
+            \item The cover has a column of 0s, say in position $j$. Let $\alpha$ be a cube of all 1s, except
+            in position $j$. Then $f = \alpha f_\alpha$, and $f' = a' + f'_\alpha$. Hence recursively compute
+            the complement of $f_\alpha$, and of a and return their union. 
+        \end{itemize}
+    \end{solution*}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Split Choice}
+\begin{columns}
+    \column{.9\linewidth}
+    \begin{theorem}
+        Let $f$ be a posilive unate function in $x$. Then $f' = f'_x + x'f'_{x'}$.
+        
+        Let $f$ be a negative unate function in $x$. Then $f' = xf'_x + f'_{x'}$.
+    \end{theorem}
+    \onslide<2>\begin{proof}
+        Let $f$ be a posilive unate function in $x$. Then \begin{align}
+        \begin{aligned}
+        f' = & (xf_x + x'f_{x'})' = (x(f_x + f_{x'}) + x'f_{x'})'\\
+        = & (xf_x + xf_{x'} + x'f_{x'})' = (xf_x + (x + x')f_{x'})'\\
+        = & (xf_x + f_{x'})' = (x' + f'_x) f'_{x'} = x'f'_{x'} + f'_x f'_{x'}\\
+        = & x'f'_{x'} + (f_x + f_{x'})'\\
+        = & f'_x + x'f'_{x'}.
+        \end{aligned}
+        \end{align}
+        For negative unate functions the proof is obtained by exchanging $x$ with $x'$. 
+    \end{proof}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Complementation Example}
+\begin{columns}
+    \column{1\linewidth}
+    \begin{eg}
+        Consider the function $f = ab + ac + a'$. Give the complement.
+    \end{eg}
+    \onslide<2>\begin{solution*}
+        Assume that
+        the first variable is chosen for splitting. We take then the cofactor again w.r.t. $10~11~11$
+        and w.r.t. $01~11~11$. The first cofactor has $11~11~11$ in the first row and yields void complement.
+        
+        The second cofactor is $\begin{matrix}
+        11 & 01 & 11\\
+        11 & 11 & 01
+        \end{matrix}$. The cover is unate. Let us select the second
+        variable, i.e., $b$. We compute now $f'_a = f'_{ab} + b'f'_{ab'}$. Now $f_{ab}$ is a tautology
+        and its complement is void. Then $f_{ab'} = c$ and its complement is $c'$,
+        which yields $f'_a = b'c'$. The complement of $f$ is
+        $f' = a f'_a = ab'c'$.
+    \end{solution*}
+    
+\end{columns}
+
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
