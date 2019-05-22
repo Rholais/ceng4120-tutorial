@@ -1,0 +1,238 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 07}
+\subtitle{Logic Minimization}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Tautology}
+\begin{eg}
+    What are the termination rules for tautology?
+\end{eg}
+\onslide<2>\begin{solution*}
+    \begin{itemize}
+        \item A cover is a tautology when it has a row of all $1$s.
+        \item A cover is not a tautology when it has a column of $0$s.
+        \item A cover is a tautology when it depends on one variable only and there is no
+        column of $0$s in that field.
+        \item A cover is not a tautology when it is unate and there is not a row of all
+        $1$s.
+    \end{itemize}
+\end{solution*}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Complementation}
+\begin{columns}
+    \column{\linewidth}
+    \begin{eg}
+        What are the termination rules for complementation?
+    \end{eg}
+    \onslide<2>\begin{solution*}
+        \begin{itemize}
+            \item $f = 0$. Its complement is the universal cube.
+            \item $f = 1$. Its complement is void.
+            \item The cover $F$ consists of one implicant. Its complement is computed by
+            De Morgan's law.
+            \item The cover has a column of 0s, say in position $j$. Let $\alpha$ be a cube of all 1s, except
+            in position $j$. Then $f = \alpha f_\alpha$, and $f' = a' + f'_\alpha$. Hence recursively compute
+            the complement of $f_\alpha$, and of a and return their union. 
+        \end{itemize}
+    \end{solution*}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Expand}
+\begin{eg}
+    Consider the function $f = a'b'c' + ab'c' + a'bc' + a'b'c$ with $abc'$ as
+    a \textit{don't care} condition. Give the expanded cover.
+\end{eg}
+
+\newpage
+
+\textbf{Solution} The set $F^{ON}$ in the positional-cube notation, is: $\begin{matrix}
+10 & 10 & 10\\
+01 & 10 & 10\\
+10 & 01 & 10\\
+10 & 10 & 01
+\end{matrix}$. The set $F^{DC}$ is $01~01~10$. The set $F^{OFF}$ is then computed by complementation: $\begin{matrix}
+01 & 11 & 01\\
+11 & 01 & 01
+\end{matrix}$. The column count vector is $(3, 1, 3, 1, 3, 1)$
+and the weights of the implicants in $F$ are $(9,7,7, 7)$.
+Hence, the second implicant is processed first, i.e., $01~10~10$.
+The raising of the $0$ in column $1$ yields $11~10~10$,
+which does not intersect the \textit{off set} and therefore is valid.
+The raising of the $0$ in column $1$ yields $11~11~10$,
+which is also valid,
+but the raising of the $0$ in column $6$ would intersect the \textit{off set}
+and it is rejected.
+
+Hence the expanded implicant is $11~11~10$, which covers the first and third
+implicants of the original cover $F^{ON}$
+Thus $F$ can be updated to: $\begin{matrix}
+11 & 11 & 10\\
+10 & 10 & 01
+\end{matrix}$.
+The last implicant is processed next. A raise of the literal in column $2$ or $4$ would
+make the implicant intersect the \textit{off set}. On the contrary, a raise in column $5$ is valid,
+yielding $10~10~11$. The expanded cover is then:  $\begin{matrix}
+11 & 11 & 10\\
+10 & 10 & 11
+\end{matrix}$ which is prime and minimal with respect to single-implicant containment.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Informal Reduce}
+\begin{eg}
+    Consider the function $f = c' + a'b'$. Let's try to reduce the first implicant.
+\end{eg}
+
+\onslide<2>\begin{solution*}
+    The complement of the last implicant is: $\begin{matrix}
+01 & 11 & 11\\
+11 & 01 & 11
+\end{matrix}$ whose intersection with the first implicant yields: $\begin{matrix}
+01 & 11 & 10\\
+11 & 01 & 10
+\end{matrix}$.
+Thus, the first implicant should be replaced by two cubes, which is not what we want.
+By taking the supercube of the complement $11~11~11$,
+and intersecting it with a we obtain it again, which shows us that it cannot be reduced.
+\end{solution*}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reduce Theorem}
+\begin{theorem}
+    Let $\alpha \in F$ be an implicant and $Q = F \cup F^{DC} - \{\alpha\}$.
+    Then, the maximally reduced cube is $\tilde{\alpha}=\alpha \cap supercube(Q'_\alpha)$.
+\end{theorem}
+
+\onslide<2>\begin{proof}
+    The maximally reduced cube can be computed by deleting from a those minterms
+    that belong to $Q$ under the restriction that the result must be a single
+    cube. Now $a \cap Q'$ can yield a set of cubes. Hence the maximally reduced
+    cube is $\tilde{\alpha}=\alpha \cap supercube(Q')$),
+    which is equivalent to $\tilde{\alpha}=\alpha \cap supercube(Q'_\alpha)$,
+    because $Q'$ can be expanded
+    as $(\alpha \cap Q'_\alpha) \cup (\alpha' \cap Q'_{\alpha'})$ and the second term has void
+    intersection with $\alpha$.
+    The cube is maximally reduced,
+    because the supercube is the smallest cube containing $Q'$.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reduce Example}
+\begin{eg}
+    Consider the function $f = c' + a'b'$. Let's try to reduce the last implicant.
+\end{eg}
+
+\onslide<2>\begin{solution*}
+    The maximally reduced cube is $\tilde{\alpha}=\alpha \cap supercube(Q'_\alpha)$,
+    where $Q = F \cup F^{DC} - \{\alpha\}$, namely $11~11~10$.
+    Hence $Q' = 11~11~01$, $Q'_\alpha = Q'$ and $supercube(Q'_\alpha) = Q'$.
+    Then $\tilde{\alpha}=\alpha \cap Q' = 10~10~01$ and the reduced cover is: $\begin{matrix}
+    11 & 11 & 10\\
+    10 & 10 & 01
+    \end{matrix}$.
+\end{solution*}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Relatively Essential}
+\begin{columns}
+    \column{.6\linewidth}
+    \begin{definition}
+    The \textbf{relatively essential} set $E^r$, which contains those implicants that cover some
+    minterms of the function not covered by other implicants of $F$.
+\end{definition}
+
+\begin{definition}
+    The \textbf{totally redundant} set $R^t$: which contains those implicants that are covered by
+    the relatively essential set.
+\end{definition}
+
+\begin{definition}
+    The \textbf{partially redundant} set $R^p$, which contains the remaining implicants.
+\end{definition}
+
+\column{.5\linewidth}
+\begin{eg}
+    Consider the following cover: \begin{tabular}{c|ccc}
+        & $a$ & $b$ & $c$\\ \midrule
+        $\alpha$ & 10 & 10 & 11\\
+        $\beta$ & 11 & 10 & 01\\
+        $\gamma$ & 01 & 11 & 01\\
+        $\delta$ & 01 & 01 & 11\\
+        $\epsilon$ & 11 & 01 & 10
+    \end{tabular}.
+\end{eg}
+\onslide<2>\begin{solution*}
+    $E^r = \{\alpha, \epsilon\}$, $R^t = \emptyset$, $R^p = \{\beta, \gamma, \delta\}$.
+\end{solution*}
+\end{columns}
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}

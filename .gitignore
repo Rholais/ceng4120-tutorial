@@ -1,4 +1,6 @@
+## Binary
 .DS_Store
+*.zip
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
