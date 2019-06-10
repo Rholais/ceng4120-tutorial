@@ -1,0 +1,286 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 08}
+\subtitle{Multiple-Level Logic Optimization}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Kernel}
+\begin{eg}
+    \label{eg:kernel}
+    Consider the kernel set of expression $f = ace + bce + de + g$.
+\end{eg}
+\onslide<2>\begin{solution*}
+    Let us divide first $f$ by variable $a$, yielding $f = ce$. Since $ce$ is a single cube and not cube free, it is not a kernel. Similar considerations apply when dividing $f$ by $b$, $d$ or $g$ (single-cube
+    quotient) and when dividing $f$ by $c$, yielding $ae + be$, which is not cube free.
+
+    On the other hand, dividing $f$ by $e$ yields $ac + bc + d$, which is
+    cube free. Hence $ac + bc + d$ is a kernel of $f$, and $e$ is the corresponding co-kernel.
+    Similarly, dividing $f$ by $ce$ yields $a + b$, which is cube free. Thus $a + b$
+    is a kernel of $f$ and $ce$ is the corresponding co-kernel. It is straightforward to verify
+    that dividing $f$ by other cubes does not yield other kernels. Since $f$ is cube free, it is
+    considered a kernel of itself, the corresponding co-kernel being $1$. Thus the kernel set of
+    $f$ is $K(f) = \{(ac+ bc +d), (a + b), (ace + bce +de +g)\}$.
+\end{solution*}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Brayton and McMullen's theorem}
+\begin{theorem}
+    Two expressions $f_a$ and $f_b$ have a common multiple-cube divisor $f_d$
+    if and only if there exist kernels $k_a \in K(f_a)$ and $k_b \in K(f_b)$ such that $\left|k_a \cap k_b\right| \ge 2$.
+\end{theorem}
+
+\onslide<2>\begin{proof}
+    Assume $\left|k_a \cap k_b\right| \ge 2$. Then the sum of two (or more) cubes in $k_a \cap k_b$ is
+    necessarily a multiple-cube divisor of both $f_a$ and $f_b$, because any expression obtained
+    by dropping some cubes from a divisor is also a divisor.
+    Conversely, let $f_d$ be a multiple-cube expression dividing both $f_a$ and $f_b$. Since
+    $f_d$ has more than one cube, there exists at least a cube-free expression $f_e$ that divides
+    $f_d$.
+    Therefore $f_e$ is a divisor of $f_a$. We claim that $f_e$ is a subset
+    of the cubes of a kernel $k_a \in K(f_a)$. Indeed any divisor of $f_a$ is a subset of those cubes
+    obtained by dividing $f_a$ by any cube of the corresponding quotient. In addition $f_e$ is cube
+    free, and any expression obtained by adding cubes to $f_e$ has the same property. Therefore
+    there exists a kernel $k_a \in K(f_a)$ containing $f_e$.
+    By the same argument, $f_e$ is a subset of the cubes of a kernel
+    $k_b \in K(f_b)$. Hence $f_e$ is a subset of the intersection of two kernels $k_a \cap k_b$ and it has
+    two or more cubes, because it is cube free.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Kernel Level}
+\begin{columns}
+    \column{.7\linewidth}
+    \begin{eg}
+        Consider the substitution of a network with the following expressions by kernel intersection:
+        $f_x = ace+bce+de+g$, $f_y = ad+bd+cde+ge$, $f_z = abc$.
+    \end{eg}
+    
+    \onslide<2->\begin{solution*}
+        The kernels of $f_x$ were computed in~\Cref{eg:kernel} namely $K(f_x) = \{(a + b), (ac + bc + d), (ace + bce + de + g)\}$.
+        The kernel set of $f_y$ is $K(f_y) = \{(a + b + ce), (cd + g), (ad + bd + cde + ge)\}$.
+        The kernel set of $f_z$ is empty.
+        There is only one kernel intersection, namely $a + b$, which can be extracted to yield:
+        $f_w = a + b$, $f_x = wce + de + g$, $f_y = wd + cde + ge$, $f_z = abc$.
+    \end{solution*}
+
+\column{.4\linewidth}
+\onslide<1->\begin{eg}
+    Let $f_x = ace + bce + de + g$. Since it is cube free, $f_x = k_1 \in K(f_x)$.
+    Expression $k_2 = ac + bc + d$ is a kernel of $f_x$.
+    Expression $k_3 = a + b$ is a kernel of $k_2$. What are the levels of the kernels?
+\end{eg}
+\onslide<3>\begin{solution*}
+    Kernel $k_3$ has no kernel but itself. Hence it has level $0$. Kernel $k_2$ has a level-$0$
+    kernel and thus has level $1$, while kernel $k_1$ has a level-$1$ kernel and has level $2$.
+\end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Find Kernel}
+\begin{columns}
+    \column{\linewidth}
+    \onslide<1->\begin{eg}
+        Consider again the kernel set of expression $f = ace + bce + de + g$ with the recursive algorithm.
+    \end{eg}
+    \onslide<2>\begin{solution*}
+        No action is taken for $a$ and $b$.
+        The third variable $c$ is in the support of two cubes. $ce$ is the first co-kernel being determined. The recursive call has as argument $a + b$.
+        It does not find any additional kernel.
+        Nevertheless, the recursive call adds a + b to the kernel set at the last step.
+        No action is taken for $d$.
+        $e$ is a co-kernel, and a recursive call is made with argument $ac + bc + d$.
+        In the recursion,
+        the kernel $a + b$ is rediscovered and added to the kernel set. Before returning from the
+        recursion, $ac + bc + d$ is added to the kernel set.
+        No action is taken for $g$.
+        The last step adds $f = ace+bce+de+g$ to the kernel set.
+        The algorithm returns $K = \{(ace + bce + de + g), (a + b), (ac + bc +d), (a + b)\}$.
+    \end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Bookkeeping}
+\begin{columns}
+    \column{.8\linewidth}
+    \onslide<1->\begin{eg}
+        Give an algorithm to compute same kernels only once.
+    \end{eg}
+    \onslide<2>\begin{solution*}
+        \begin{algorithm}[H]
+            \caption{Find Kernel}
+            \label{a-6}
+            \begin{algorithmic}
+                \Procedure{Find}{$f$, $i$}
+                \State $K \coloneqq \emptyset$
+                \For{$j \coloneqq i \cdots m$}
+                \If{$\left|\Call{Cubes}{f, x_j}\right| \ge 2$} \textbf{continue}
+                \EndIf
+                \State $C \coloneqq \bigcap \Call{Cubes}{f, x_j}$
+                \If{$x_k \notin C, \forall k < i$} $K \coloneqq K \cup \Call{Find}{f / C, j + 1}$
+                \EndIf
+                \EndFor
+                \State \Return $K \cup \{f\}$
+                \EndProcedure
+            \end{algorithmic}
+        \end{algorithm}
+    \end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Find Unique Kernel}
+\begin{columns}
+    \column{\linewidth}
+    \onslide<1->\begin{eg}
+        Consider again the kernel set of expression $f = ace + bce + de + g$ with the improved recursive algorithm.
+    \end{eg}
+    \onslide<2>\begin{solution*}
+        No action is taken for $a$ and $b$.
+        The third variable $c$ is in the support of two cubes whose intersection $C = ce$.
+        The recursive call has as arguments expression $a + b$ and pointer $j = 3 + 1$ without action.
+        Nevertheless, it adds $a + b$ to the kernel set.
+
+        No action is taken for $d$.
+        The fifth variable $e$ is in the support of three cubes of $f$.
+        A recursive call is done with arguments $ac + bc + d$ and pointer $j = 5 + 1$.
+        In the recursion, only the sixth variable $g$ is considered and no kernel is discovered.
+        Before returning from the recursion $ac + bc + d$ is added to the kernel set.
+        No action is taken for $g$.
+        The last step adds $f = ace + bce + de + g$ to the kernel set.
+        The algorithm returns $K = \{(ace + bce + de + g), (ac + bc + d), (a + b)\}$.
+    \end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Rectangle}
+\begin{columns}
+    \column{.4\linewidth}
+    \onslide<1->\begin{definition}
+        A \textbf{rectangle} of a matrix $A$ is a subset of rows and columns, where all
+        entries are 1.
+    \end{definition}
+\begin{definition}
+    The \textbf{co-rectangle} of a rectangle $(R, C)$ is the pair $(R, C')$, where $C'$
+    is the complement of the column subset $C$.
+\end{definition}
+\column{.7\linewidth}
+\begin{eg}
+    Consider the matrix of expression $f_x = ace + bce + de + g$, with $m = 4$ cubes and
+    $n = 6$ variables.
+\end{eg}
+    \onslide<2>\begin{solution*}
+        \begin{table}
+            \caption{Matrix}
+            \label{tb:fx}
+            \begin{tabular}{c|ccccccc}
+            & var & $a$ & $b$ & $c$ & $d$ & $e$ & $g$\\\midrule
+            cube & R \textbackslash C & $1$ & $2$ & $3$ & $4$ & $5$ & $6$  \\
+            $ace$ & $1$ & $1$ & $0$ & $1$ & $0$ & $1$ & $0$\\
+            $bce$ & $2$ & $0$ & $1$ & $1$ & $0$ & $1$ & $0$\\
+            $de$ & $3$ & $0$ & $0$ & $0$ & $1$ & $1$ & $0$\\
+            $g$ & $4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $1$
+        \end{tabular}
+        \end{table}
+    \end{solution*}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Prime Rectangle}
+\begin{columns}
+    \column{.4\linewidth}
+    \begin{eg}
+        Find kernels from~\Cref{tb:fx}.
+    \end{eg}
+    \onslide<2->\begin{solution*}
+        Prime rectangle $(\{1, 2\}, \{3, 5\})$ identifies co-kernel $ce$,
+        whose kernel is identified by $(\{1, 2\}, \{1, 2, 4, 6\})$. Hence the kernel is $a + b$.
+
+        The other prime rectangle $(\{1, 2, 3\}, \{5\})$ identities co-kernel $e$.
+        The kernel is $ac + bc + d$.
+    \end{solution*}
+\column{.7\linewidth}
+\onslide<1->\begin{eg}
+    Extract cube intersection of expressions $f_x = ace + bce + de + g$ and $f_s = cde + b$.
+\end{eg}
+\onslide<3>\begin{solution*}
+    \begin{tabular}{cc|ccccccc}
+        & & var & $a$ & $b$ & $c$ & $d$ & $e$ & $g$\\\midrule
+        cube & id & R \textbackslash C & $1$ & $2$ & $3$ & $4$ & $5$ & $6$  \\
+        $ace$ & $x$ & $1$ & $1$ & $0$ & $1$ & $0$ & $1$ & $0$\\
+        $bce$ & $x$ & $2$ & $0$ & $1$ & $1$ & $0$ & $1$ & $0$\\
+        $de$ & $x$ & $3$ & $0$ & $0$ & $0$ & $1$ & $1$ & $0$\\
+        $g$ & $x$ & $4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $1$\\
+        $cde$ & $s$ & $5$ & $0$ & $0$ & $1$ & $1$ & $1$ & $0$\\
+        $b$ & $s$ & $6$ & $0$ & $1$ & $0$ & $0$ & $0$ & $0$\\
+    \end{tabular}
+
+A prime rectangle is $(\{1, 2, 5\}, \{3, 5\})$, corresponding to cube $ce$, which is present
+in both expressions $f_x$ (row $1$, $2$) and $f_s$ (row $5$).
+\end{solution*}
+\end{columns}
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
