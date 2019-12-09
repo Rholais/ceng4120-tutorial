@@ -2,6 +2,9 @@
 .DS_Store
 *.zip
 
+## Innovus
+.timing_file_*.tif.gz
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
