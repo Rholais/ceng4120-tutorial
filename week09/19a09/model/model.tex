@@ -1,0 +1,531 @@
+\documentclass[acmlarge,screen=true,anonymous=false,11pt]{acmart}
+
+% ======================================================== 
+%          Copyright & Conference setting
+% ======================================================== 
+% copyright
+\setcopyright{none}
+\settopmatter{printacmref=false, printccs=false, printfolios=true}
+
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
+
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+
+\usepackage{booktabs}
+
+\usepackage{cleveref}
+\crefname{mytheorem}{Theorem}{Theorems}
+
+\usepackage{enumerate}
+\usepackage[linguistics]{forest}
+
+\usepackage{pgfplots}
+\usepackage{textgreek}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{patterns}
+
+\usepackage{soul}
+
+\usepackage{tikz}
+\usetikzlibrary {positioning}
+\usetikzlibrary{shapes,arrows}
+
+\newtheorem*{solution*}{Solution}
+
+% ==== defined colors
+\definecolor{myorange}{RGB}{244,106,18} %F47012
+\definecolor{myblue}{RGB}{0,111,190}    %006FBE
+\definecolor{mygreen}{RGB}{0,127,128}   %007F80
+\definecolor{myred}{RGB}{228,46,36}     %E42E24
+\definecolor{myyellow}{RGB}{198,148,34} %C69422
+\definecolor{mydark}{RGB}{114,44,114}   %722C72
+\definecolor{mymiddle}{RGB}{144,44,144} %902C90
+\definecolor{mylight}{RGB}{167,44,167}  %A72CA7
+
+\definecolor{light-cayenne}{RGB}{177,0,28} %B1001C
+\definecolor{light-mocha}{RGB}{179,68,0}   %B34400
+\definecolor{ocean}{RGB}{0,55,118}         %003776
+
+\iffalse
+\newtoggle{screen}
+\toggletrue{screen}
+\AtEndPreamble{%
+\iftoggle{screen}
+{
+    \hypersetup{colorlinks, % 01/2018 Bei: change link colors all to blue
+        linkcolor=blue,
+        citecolor=blue,
+        urlcolor=blue,
+        filecolor=blue}
+}
+{
+    \hypersetup{hidelinks}
+}}
+\fi
+
+\begin{document}
+\title{CENG 4120 Assignment 2 Sample Solution}
+\subtitle{Computer-Aided Design for Very Large Scale Integrated Circuits \\ Due Date: March 04 (Monday) 5:00pm}
+
+\maketitle
+
+\section{Shannon Expansion}
+\begin{enumerate}[(i)]
+    \item \begin{proof}
+        We can divide the SOP terms of $f$ in three categories: $f = xf_+ + \overline{x}f_- + f_0$ where $xf_+$ equals all terms with $x$, $\overline{x}f_-$ equals all terms with $\overline{x}$ and $f_0$ equals all terms without $x$ or $\overline{x}$ then we have $f_{x = 1} = f_+ + f_0$ and $f_{x = 0} = f_- + f_0$.
+        Therefore, \begin{align}
+            \begin{aligned}
+            \overline{f_x} = & \overline{xf_{x = 1} + \overline{x}f_{x = 0}}\\
+            = & \overline{x (f_+ + f_0) + \overline{x}(f_- + f_0)}\\
+            = & (\overline{x} + \overline{(f_+ + f_0)})(x + \overline{(f_- + f_0)})\\
+            = & x\overline{(f_+ + f_0)} + \overline{x}\overline{(f_- + f_0)}\\
+            = & x\overline{f}_{x = 1} + \overline{x}\overline{f}_{x = 0} = \left(\overline{f}\right)_x.
+            \end{aligned}
+        \end{align}
+    \end{proof}
+    \item \begin{proof}
+        Let $f = xf_+ + \overline{x}f_- + f_0$ and $g = xg_+ + \overline{x}g_- + g_0$, where any of $f_+, f_-, f_0, g_+, g_-, g_0$ is not supported by $x$, then $f + g = x(f_+ + g_+) + \overline{x}(f_- + g_-) + f_0 + g_0$.
+        \begin{align}
+            \begin{aligned}
+            f_x + g_x = & xf_{x = 1} + \overline{x}f_{x = 0} + xg_{x = 1} + \overline{x}g_{x = 0}\\
+            = & x(f_+ + f_0) + \overline{x}(f_- + f_0)+ x(g_+ + g_0) + \overline{x}(g_- + g_0)\\
+            = & x(f_+ + g_+ + f_0 + g_0) + \overline{x}(f_- + g_- + f_0 + g_0)\\
+            = & x(f + g)_{x = 1} + \overline{x}(f + g)_{x = 0}\\
+            = & \left(f + g\right)_x.
+            \end{aligned}
+        \end{align}
+    \end{proof}
+\end{enumerate}
+
+\section{Unate Recursive Paradigm}
+\begin{enumerate}[(i)]
+    \item \begin{solution*}
+        \begin{figure}
+            \begin{forest}
+                [$\begin{matrix}
+                10 & 01 & 01 & 11\\
+                10 & 11 & 10 & 01\\
+                01 & 01 & 01 & 01
+                \end{matrix}$[$\begin{matrix}
+                11 & 01 & 01 & 01
+                \end{matrix}$][$\begin{matrix}
+                11 & 01 & 01 & 11\\
+                11 & 11 & 10 & 01
+                \end{matrix}$[$\begin{matrix}
+                11 & 01 & 11 & 11
+                \end{matrix}$][$\begin{matrix}
+                11 & 11 & 11 & 01
+                \end{matrix}$]]]
+            \end{forest}
+        \caption{Recursion Tree}
+        \label{fg:2}
+        \end{figure}
+
+By the recursion tree in~\Cref{fg:2}, \begin{equation}
+    \overline{F(x, y, z, w)} = x \cdot (\overline{y} + \overline{z} + \overline{w}) + \overline{x} \cdot (\overline{y} \cdot z + \overline{z} \cdot \overline{w}) = x \cdot \overline{y} + x \cdot \overline{z} + x \cdot \overline{w} + \overline{x} \cdot \overline{y} \cdot z + \overline{x} \cdot \overline{z} \cdot \overline{w}.
+\end{equation}
+    \end{solution*}
+
+\item \begin{solution*}
+    \begin{table}
+        \caption{Karnaugh Map}
+        \label{tb:2}
+        \begin{tabular}{c|cccc}
+            $zw$\textbackslash$xy$ & $00$ & $01$ & $11$ & $10$ \\\midrule
+            $00$ & $0$ & $0$ & $0$ & $0$ \\
+            $01$ & $1$ & $1$ & $0$ & $0$ \\
+            $11$ & $0$ & $1$ & $1$ & $0$ \\
+            $10$ & $0$ & $1$ & $0$ & $0$
+        \end{tabular}
+    \end{table}
+\end{solution*}
+
+The complement function covers all zeros of the Karnaugh map shown in~\Cref{tb:2} but no ones.
+\end{enumerate}
+
+\section{Simple Comparator}
+\begin{enumerate}[(i)]
+    \item \begin{solution*}
+        \begin{table}
+            \caption{Comparator Karnaugh Map}
+            \label{tb:3}
+            \begin{tabular}{c|cccc}
+                $b_1 b_0$\textbackslash$a_1 a_0$ & $00$ & $01$ & $11$ & $10$ \\\midrule
+                $00$ & $1$ & $1$ & $1$ & $1$\\
+                $01$ & $0$ & $1$ & $1$ & $1$\\
+                $11$ & $0$ & $0$ & $1$ & $0$\\
+                $10$ & $0$ & $0$ & $1$ & $1$
+            \end{tabular}
+        \end{table}
+
+From the Karnaugh map shown in~\Cref{tb:3}, we have \begin{equation}
+    z = a_1 \cdot a_0 + a_1 \cdot \overline{b_1} + a_1 \cdot \overline{b_0} + a_0 \cdot \overline{b_1} + \overline{b_1} \cdot \overline{b_0}
+\end{equation}
+    \end{solution*}
+
+\item \begin{solution*}
+    The ROBDD for good order $a_1, b_1, a_0, b_0$ is shown in~\Cref{fg:3:2}.
+\begin{figure}
+    \newdimen\nodeDist
+    \nodeDist=.7cm
+    \newdimen\nodeSize
+    \nodeSize=.7cm
+    \begin{tikzpicture}[
+    node2/.style ={rectangle, draw=black, fill=white,
+        text width=0.75cm, text centered,
+        minimum size=\nodeSize,
+        },
+    node1/.style={
+        draw,
+        circle,
+        inner sep=0,
+        outer sep=0,
+        minimum size=\nodeSize,
+        node distance=\nodeDist
+    },
+    ]
+    
+    \node[node1] (a_1) {$a_1$};
+    \node[node1] (b_1_l) [below left = \nodeDist of a_1] {$b_1$};
+    \node[node1] (b_1_r) [below right = \nodeDist of a_1] {$b_1$};
+    \node[node1] (a_0) [below right = \nodeDist of b_1_l]{$a_0$};
+    \node[node1] (b_0) [below = \nodeDist of a_0] {$b_0$};
+    \node[node2] (s0) [below left = \nodeDist of b_0] {$0$};
+    \node[node2] (s1) [below right = \nodeDist of b_0] {$1$};
+    
+    \path (a_1) edge[dashed] (b_1_l);
+    \path (a_1) edge (b_1_r);
+    \path (b_1_l) edge (s0);
+    \path (b_1_l) edge[dashed] (a_0);
+    \path (b_1_r) edge[dashed] (s1);
+    \path (b_1_r) edge (a_0);
+    \path (a_0) edge[dashed] (b_0);
+    \path (a_0) edge (s1);
+    \path (b_0) edge (s0);
+    \path (b_0) edge[dashed] (s1);
+    \end{tikzpicture}
+    \caption{Good Order}
+    \label{fg:3:2}
+\end{figure}
+\end{solution*}
+
+\item \begin{solution*}
+    The ROBDD for bad order $a_1, a_0, b_1, b_0$ is shown in~\Cref{fg:3:3}.
+\begin{figure}
+    \newdimen\nodeDist
+    \nodeDist=.7cm
+    \newdimen\nodeSize
+    \nodeSize=.7cm
+    \begin{tikzpicture}[
+    node2/.style ={rectangle, draw=black, fill=white,
+        text width=0.75cm, text centered,
+        minimum size=\nodeSize
+    },
+    node1/.style={
+        draw,
+        circle,
+        inner sep=0,
+        outer sep=0,
+        minimum size=\nodeSize,
+        node distance=\nodeDist
+    },
+    ]
+    
+    \node[node1] (a_1) {$a_1$};
+    \node[node1] (a_0_l) [below left = \nodeDist of a_1] {$a_0$};
+    \node[node1] (a_0_r) [below right = \nodeDist of a_1] {$a_0$};
+    \node[node1] (b_1_l) [below left = \nodeDist of a_0_l] {$b_1$};
+    \node[node1] (b_1_m) [below right = \nodeDist of a_0_l] {$b_1$};
+    \node[node1] (b_1_r) [below right = \nodeDist of a_0_r] {$b_1$};
+    \node[node1] (b_0) [below = \nodeDist of b_1_m] {$b_0$};
+    \node[node2] (s0) [below left = \nodeDist of b_0] {$0$};
+    \node[node2] (s1) [below right = \nodeDist of b_0] {$1$};
+    
+    \path (a_1) edge[dashed] (a_0_l);
+    \path (a_1) edge (a_0_r);
+    \path (a_0_l) edge[dashed] (b_1_l);
+    \path (a_0_l) edge (b_1_m);
+    \path (a_0_r) edge[dashed] (b_1_r);
+    \path (a_0_r) edge (s1);
+    \path (b_1_l) edge (s0);
+    \path (b_1_l) edge[dashed] (b_0);
+    \path (b_1_m) edge[dashed] (s1);
+    \path (b_1_m) edge (s0);
+    \path (b_1_r) edge[dashed] (s1);
+    \path (b_1_r) edge (b_0);
+    \path (b_0) edge[dashed] (s1);
+    \path (b_0) edge (s0);
+    \end{tikzpicture}
+    \caption{Good Order}
+    \label{fg:3:3}
+\end{figure}
+\end{solution*}
+\end{enumerate}
+
+\section{ITE Recursion}
+\begin{solution*}
+    The top-level ITE tuple is \begin{equation}
+        f = a \oplus b = ITE(a, \overline{b}, b).
+    \end{equation}
+    Let the topmost variable be $a$ and label the topmost node accordingly, then the lower diagram is \begin{equation}
+        f_l = ITE(0, \overline{b}, b) = b,
+    \end{equation} and the upper diagram is \begin{equation}
+        f_h = ITE(1, \overline{b}, b) = \overline{b}.
+    \end{equation}
+    The BDD in~\Cref{fg:4} is achieved after simplification.
+    \begin{figure}
+        \newdimen\nodeDist
+        \nodeDist=.7cm
+        \newdimen\nodeSize
+        \nodeSize=1cm
+        \begin{tikzpicture}[
+        node2/.style ={rectangle, draw=black, fill=white,
+            text width=0.7cm, text centered,
+            minimum height=1cm},
+        node1/.style={
+            draw,
+            circle,
+            inner sep=0,
+            outer sep=0,
+            minimum size=\nodeSize,
+            node distance=\nodeDist
+        },
+        ]
+        
+        \node[node1] (a) {$a$};
+        \node[node1] (b_l) [below left = \nodeDist of a] {$b$};
+        \node[node1] (b_r) [below right = \nodeDist of a] {$b$};
+        \node[node2] (s0) [below = \nodeDist of b_l] {$0$};
+        \node[node2] (s1) [below = \nodeDist of b_r] {$1$};
+
+        \path (a) edge[dashed] (b_l);
+        \path (a) edge (b_r);
+        \path (b_l) edge (s1);
+        \path (b_l) edge[dashed] (s0);
+        \path (b_r) edge[dashed] (s1);
+        \path (b_r) edge (s0);
+        \end{tikzpicture}
+        \caption{BDD}
+        \label{fg:4}
+    \end{figure}
+\end{solution*}
+
+\section{Positional Cube Notation}
+\begin{enumerate}[(i)]
+    \item \begin{solution*}
+        $F = a \cdot b \cdot c + a \cdot b \cdot \overline{c} + \overline{a} \cdot b + \overline{b} \cdot \overline{c} \cdot \overline{d} = \begin{matrix}
+        01 & 01 & 01 & 11\\
+        01 & 01 & 10 & 11\\
+        10 & 01 & 11 & 11\\
+        11 & 10 & 10 & 10
+        \end{matrix}.$
+    \end{solution*}
+
+\item \begin{solution*}
+    $\overline{F} = \overline{b}c + \overline{b}d = \begin{matrix}
+    11 & 10 & 01 & 11\\
+    11 & 10 & 11 & 01
+    \end{matrix}$.
+\end{solution*}
+
+\item \begin{solution*}
+    The blocking matrix of $a \cdot b \cdot c$ is \begin{tabular}{c|cc}
+        & $\overline{b}c$ & $\overline{b}d$\\\midrule
+        $a$ & &\\
+        $b$ & $1$ & $1$\\
+        $c$ & &
+    \end{tabular}. Thus, it can be expanded as $b$.
+
+The blocking matrix of $a \cdot b \cdot \overline{c}$ is \begin{tabular}{c|cc}
+    & $\overline{b}c$ & $\overline{b}d$\\\midrule
+    $a$ & &\\
+    $b$ & $1$ & $1$\\
+    $\overline{c}$ & $1$ &
+\end{tabular}. Thus, it can be expanded as $b$.
+
+The blocking matrix of $\overline{a} \cdot b$ is \begin{tabular}{c|cc}
+    & $\overline{b}c$ & $\overline{b}d$\\\midrule
+    $\overline{a}$ & &\\
+    $b$ & $1$ & $1$
+\end{tabular}. Thus, it can be expanded as $b$.
+
+The blocking matrix of $\overline{b} \cdot \overline{c} \cdot \overline{d}$ is \begin{tabular}{c|cc}
+    & $\overline{b}c$ & $\overline{b}d$\\\midrule
+    $\overline{b}$ & &\\
+    $\overline{c}$ & $1$ &\\
+    $\overline{d}$ & & $1$
+\end{tabular}. Thus, it can be expanded as $\overline{c} \cdot \overline{d}$.
+\end{solution*}
+
+\item $F = b + \overline{c} \cdot \overline{d} = \begin{matrix}
+11 & 01 & 11 & 11\\
+11 & 11 & 10 & 10
+\end{matrix}$.
+\end{enumerate}
+
+\section{Kernel}
+\begin{enumerate}[(i)]
+    \item \begin{solution*}
+        \hspace{-2in}
+        \resizebox{1.4\linewidth}{!}{
+        \begin{forest}
+            [$abcd + abf + abh + pqcw + pqh + cdefw$[$\begin{matrix}
+            \mathrm{cubes} & abcd + abf + abh\\
+            \mathrm{co} & ab\\
+            \mathrm{kernel} & cd + f + h
+            \end{matrix}$[no work]][$\begin{matrix}
+            abcd + abf + abh\\
+            ab\\
+            cd + f + h
+            \end{matrix}$[no work]][$\begin{matrix}
+            abcd + pqcw + cdefw\\
+            c\\
+            abd + pqw + defw
+            \end{matrix}$[$\begin{matrix}
+            abd + defw\\
+            d\\
+            ab + efw
+            \end{matrix}$[no work]][$\begin{matrix}
+            pqw + defw\\
+            w\\
+            pq + def
+            \end{matrix}$[no work]]][$\begin{matrix}
+            abcd + cdefw\\
+            cd\\
+            ab + efw
+            \end{matrix}$[no work]][$\begin{matrix}
+            abf + cdefw\\
+            f\\
+            ab + cdew
+            \end{matrix}$[no work]][$\begin{matrix}
+            abh + pqh\\
+            h\\
+            ab + pq
+            \end{matrix}$[no work]][$\begin{matrix}
+            pqcw + pqh\\
+            pq\\
+            cw + h
+            \end{matrix}$[no work]][$\begin{matrix}
+            pqcw + pqh\\
+            pq\\
+            cw + h
+            \end{matrix}$[no work]][$\begin{matrix}
+            pqcw + cdefw\\
+            cw\\
+            pq + def
+            \end{matrix}$[no work]]]
+        \end{forest}}
+    
+    Therefore, the corresponding kernels and co-kernels of $F$ are \begin{tabular}{cc}
+        kernel & co-kernel \\\midrule
+        $cd + f + h$ & $ab$\\
+        $ab + efw$ & $cd$\\
+        $pq + def$ & $cw$\\
+        $abd + pqw + defw$ & $c$\\
+        $ab + cdew$ & $f$\\
+        $ab + pq$ & $h$\\
+        $cw + h$ & $pq$\\
+        $abcd + abf + abh + pqcw + pqh + cdefw$ & $1$
+    \end{tabular}.
+    
+    \begin{forest}
+        [$abce + abg + pqcw + pqg$[$\begin{matrix}
+        \mathrm{cubes} & abce + abg\\
+        \mathrm{co} & ab\\
+        \mathrm{kernel} & ce + g
+        \end{matrix}$[no work]][$\begin{matrix}
+        abce + abg\\
+        ab\\
+        ce + g
+        \end{matrix}$[no work]][$\begin{matrix}
+        abce + pqcw\\
+        c\\
+        abe + pqw
+        \end{matrix}$[no work]][$\begin{matrix}
+        abg + pqg\\
+        g\\
+        ab + pq
+        \end{matrix}$[no work]][$\begin{matrix}
+        pqcw + pqg\\
+        pq\\
+        cw + g
+        \end{matrix}$[no work]][$\begin{matrix}
+        pqcw + pqg\\
+        pq\\
+        cw + g
+        \end{matrix}$[no work]]]
+    \end{forest}
+
+Therefore, the corresponding kernels and co-kernels of $G$ are \begin{tabular}{cc}
+    kernel & co-kernel \\\midrule
+    $ce + g$ & $ab$\\
+    $abe + pqw$ & $c$\\
+    $ab + pq$ & $g$\\
+    $cw + g$ & $pq$\\
+    $abce + abg + pqcw + pqg$ & $1$
+\end{tabular}.
+
+    \end{solution*}
+
+\item \begin{solution*}
+    \begin{tabular}{c|ccccccccccc}
+    & a & b & c & d & e & f & g & h & p & q & w \\\midrule
+    abcd & \hl{1} & \hl{1} & 1 & 1 &   &   &   &   &   &   &   \\
+    abf  & \hl{1} & \hl{1} &   &   &   & 1 &   &   &   &   &   \\
+    abh  & \hl{1} & \hl{1} &  &  &   &   &   & 1 &   &   &   \\
+    pqcw &   &   & 1 &   &   &   &   &   & 1 & 1 & 1 \\
+    pqh  &   &   &   &   &   &   &   & 1 & 1 & 1 &   \\
+    cdefw&   &   & 1 & 1 & 1 & 1 &   &   &   &   & 1 \\\midrule
+    abce  & \hl{1} & \hl{1} & 1 &   & 1 &   &   &   &   &   &   \\
+    abg   & \hl{1} & \hl{1} &   &   &   &   & 1 &   &   &   &   \\
+    pqcw  &   &   & 1 &   &   &   &   &   & 1 & 1 & 1 \\
+    pqg   &   &   &   &   &   &   & 1 &   & 1 & 1 &
+\end{tabular}.
+
+The single cube divisor is $ab$. The number of saved literals is $(2 - 1) \times 5 - 2 = 3$.
+\end{solution*}
+
+\item \begin{solution*}
+    \begin{tabular}{c|cccccccccccccccccccccccc}
+        & cd & f & h & abd & pqw & defw & efw & ab & cdew & def & ce & g & abe & cw & pq  \\\midrule
+        ab  &  1 & 1 & 1 &     &     &      &     &    &      &     &    &   &     &    &    \\
+        c   &    &   &   &  1  &  1  &   1  &     &    &      &     &    &   &     &    &    \\
+        cd  &    &   &   &     &     &      &  1  &  1 &      &     &    &   &     &    &    \\
+        f   &    &   &   &     &     &      &     &  1 &   1  &     &    &   &     &    &    \\
+        h   &    &   &   &     &     &      &     &  \hl{1} &      &     &    &   &     &    &  \hl{1}  \\
+        pq  &    &   & 1 &     &     &      &     &    &      &     &    &   &     &  1 &    \\
+        cw  &    &   &   &     &     &      &     &    &      &   1 &    &   &     &    &  1 \\\midrule
+        ab  &    &   &   &     &     &      &     &    &      &     & 1  &  1&     &    &    \\
+        c   &    &   &   &     &  1  &      &     &    &      &     &    &   &  1  &    &    \\
+        pq  &    &   &   &     &     &      &     &    &      &     &    & 1 &     &  1 &    \\
+        g   &    &   &   &     &     &      &     &  \hl{1} &      &     &    &   &     &    & \hl{1}
+    \end{tabular}.
+
+The multiple cube divisor found is $ab+pq$. The number of saved literals is $12 - 4 - 4 = 4$.
+\end{solution*}
+\end{enumerate}
+
+\section{Shannon Expansion}
+\begin{enumerate}[(i)]
+    \item \begin{solution*}
+        $F = (x + F_{\overline{x}})(\overline{x} + F_x)$.
+    \end{solution*}
+
+\item \begin{proof}
+    \begin{align}
+        \begin{aligned}
+        (x + F_{\overline{x}})(\overline{x} + F_x) = & xF_x + \overline{x}F_{\overline{x}} + F_x F_{\overline{x}}\\
+        = & xF_x + \overline{x}F_{\overline{x}} + (x + \overline{x}) F_x F_{\overline{x}}\\
+        = & xF_x + x F_x F_{\overline{x}} + \overline{x}F_{\overline{x}} + \overline{x} F_x F_{\overline{x}}\\
+        = & xF_x(1 + F_{\overline{x}}) + \overline{x}F_{\overline{x}}(1 + F_x)\\
+        = & xF_x + \overline{x}F_{\overline{x}}.
+        \end{aligned}
+    \end{align}
+\end{proof}
+\end{enumerate}
+
+\end{document}

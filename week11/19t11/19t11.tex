@@ -1,0 +1,211 @@
+%!TEX program = xelatex
+\documentclass[10pt, compress, handout]{beamer}
+\usepackage[titleprogressbar]{../../cls/beamerthemem}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{theorems}[numbered]
+\newcounter{example}
+\resetcounteronoverlays{example}
+\newtheorem{crl}{Corollary}[theorem]
+\newtheorem{eg}[example]{Example}
+\newtheorem*{solution*}{Solution}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{minted}
+
+\usepackage{cleveref}
+\crefname{example}{Example}{Examples}
+
+\usepgfplotslibrary{dateplot}
+
+\usemintedstyle{trac}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\resetcounteronoverlays{algorithm}
+
+\usepackage[linguistics]{forest}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{qtree}
+
+\usepackage{tikz}
+
+\usepackage{version}
+% \excludeversion{proof}
+% \excludeversion{solution*}
+
+\makeatletter
+\def\old@comma{,}
+\catcode`\,=13
+\def,{%
+    \ifmmode%
+    \old@comma\discretionary{}{}{}%
+    \else%
+    \old@comma%
+    \fi%
+}
+\makeatother
+
+\title{CENG 4120 Tutorial of Week 11}
+\subtitle{Rectlinear Minimum Spanning Tree}
+\author{LI Haocheng}
+\institute{Department of Computer Science and Engineering}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+\frametitle{RMST}
+\begin{definition}
+    A \textbf{tree} is a graph whose $n$ nodes are connected by $n - 1$ edges.
+\end{definition}
+\begin{definition}
+    A \textbf{spanning tree} in a graph $G(V,E)$ is a connected, acyclic subgraph $G'$ contained
+    within $G$ that includes (spans) every node $v \in V$.
+\end{definition}
+\begin{definition}
+    A \textbf{minimum spanning tree} (MST) is a spanning tree with the smallest possible sum
+    of edge costs.
+\end{definition}
+\begin{definition}
+    Given a set of points $V$ , an undirected
+    graph $G(V , E)$ is called a \textbf{spanning graph} if it
+    contains a minimum spanning tree.
+\end{definition}
+\begin{definition}
+    A \textbf{rectilinear minimum spanning tree} (RMST) is an MST where all edge lengths
+    correspond to the Manhattan (rectilinear) distance metric.
+\end{definition}
+\end{frame}
+
+\begin{frame}
+\frametitle{Minimum Spanning Tree}
+\begin{eg}
+    Construct RMST with $O(|E| \log |V|)$ time complexity.
+\end{eg}
+\onslide<2->\begin{solution*}
+    Use Kruskal's Algorithm.
+\end{solution*}
+\onslide<1->\begin{theorem}
+    For any cycle $C$ in the graph, if the weight of an edge $e$ of $C$ is larger than the individual weights of all other edges of $C$, then this edge cannot belong to an MST.
+\end{theorem}
+\onslide<3>\begin{proof}
+    Assume the contrary, i.e. that $e$ belongs to an MST $T_1$. Then deleting $e$ will break $T_1$ into two sub-trees with the two ends of $e$ in different sub-trees. The remainder of $C$ reconnects the sub-trees, hence there is an edge $f$ of $C$ with ends in different sub-trees, i.e., it reconnects the sub-trees into a tree $T_2$ with weight less than that of $T_1$.
+\end{proof}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Uniqueness Property}
+\begin{columns}
+    \column{.5\linewidth}
+    \onslide<1->\begin{definition}
+        Given a point $s$, a region $R$ has the
+        \textbf{uniqueness property} with respect to $s$ if for every
+        pair of points $p, q \in R$, $\|pq\|_1 < max(\|sp\|_1, \|sq\|_1)$.
+        A partition of space into a finite set of disjoint regions
+        is said to have the uniqueness property if each of its
+        regions has the uniqueness property.
+    \end{definition}
+\onslide<1->\begin{theorem}
+    Given a point $s$ in the plane, the octal
+    partition with respect to $s$ has the uniqueness property.
+\end{theorem}
+\column{.6\linewidth}
+\onslide<2->\begin{proof}
+    Suppose we have two points $p$ and $q$ in $R_1$.
+    W.l.o.g, we can assume $x_p \le x_q$ .
+    If $y_p \le y_q$,
+    then we have $\|sq\|_1 = \|sp\|_1 + \|pq\|_1 > \|pq\|_1$.
+    Therefore, we only need to consider the case when $y_p > y_q$.
+    In this case, we have \begin{align}
+        \begin{aligned}
+        pq = & |x_p - x_q| + |y_p - y_q|\\
+        = & x_q - x_p + y_p - y_q\\
+        = & (x_q - y_q) + y_p - x_p\\
+        < & (x_s - y_s) + y_p - x_s\\
+        = & y_p - y_s\\
+        \le & x_p - x_s + y_p - y_s = \|sp\|_1.
+        \end{aligned}
+    \end{align}
+\end{proof}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Active Set}
+\begin{columns}
+    \column{.5\linewidth}
+    \onslide<1->\begin{definition}
+        \textbf{Active set} consisting of points whose nearest neighbors in R1 are
+        still to be discovered.
+    \end{definition}
+
+\begin{theorem}
+    For any two points $p, q$ in the active set,
+    we have $x_p \ne x_q$ , and if $x_p < x_q$ then $x_p - y_p \le x_q - y_q$.
+\end{theorem}
+
+\onslide<2->\begin{proof}
+    Otherwise, $p$ is not active.
+\end{proof}
+
+    \column{.5\linewidth}
+    \onslide<1->\begin{theorem}
+        When the sweep step processes point $s$,
+        we find a subset of active points which have $s$ in their $R_1$ regions.
+        We need only to connects with the nearest active point.
+    \end{theorem}
+
+\onslide<3>\begin{proof}
+    W.l.o.g, suppose $p$ and $q$ are two of them.
+    Then $p$ and $q$ are in the $R_5$ region of $s$,
+    which means $\|pq\|_1 < max(\|sp\|_1, \|sq\|_1)$.
+\end{proof}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{RMST Construction}
+\begin{columns}
+    \column{.3\linewidth}
+    \onslide<1->\begin{theorem}
+        Given $n$ points in the plane, the algorithm constructs a spanning
+        graph in $O(n \log n)$ time, and the number of edges in
+        the graph is $O(n)$.
+    \end{theorem}
+    
+    \column{.8\linewidth}
+    \begin{algorithmic}
+        \Procedure{RectilinearSpanningGraph}{}
+        \State sort points according to $x + y$;
+        \State $A \coloneqq \emptyset$;
+        \For{each point $p$ in the order}
+        \State find points in $A$ such that $p$ is in their $R_1$ region
+        \State connect $p$ with the nearest point in the subset
+        \State delete the subsets from $A$
+        \State $A \coloneqq A \cap \{p\}$
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{columns}
+
+\onslide<2>\begin{proof}
+    All edges that we delete are redundant based on the cycle
+    property. Thus, the output graph of the algorithm will
+    contain at least one rectilinear minimum spanning tree.
+    In the algorithm, each given point will be inserted
+    and deleted at most once from the active set for $R_1$,
+    For each insertion or
+    deletion, the algorithm requires $O(\log n)$ time.
+    Thus,
+    the total time is upper bounded by $O(n \log n)$.
+\end{proof}
+\end{frame}
+
+\plain{Questions?}
+
+\end{document}
