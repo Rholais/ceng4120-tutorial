@@ -46,6 +46,7 @@ Computing Machinery]
     for any problems from now on.}}{}
 \RequirePackage{xkeyval}
 \RequirePackage{xstring}
+\RequirePackage{iftex}
 \define@choicekey*+{acmart.cls}{format}[\ACM@format\ACM@format@nr]{%
   manuscript, acmsmall, acmlarge, acmtog, sigconf, siggraph,
   sigplan, sigchi, sigchi-a}[manuscript]{}{%
